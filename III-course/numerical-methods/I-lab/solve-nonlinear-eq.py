@@ -79,7 +79,7 @@ def relaxation(f: np.poly1d, x_left: float, x_right: float, x_start: float, eps:
 
     estimated_num_iteration = int(np.ceil(np.log(np.abs(x_start - x_i) / eps) / np.log(1. / q))) + 1
 
-    print('Simple iteration method. Apriori iteration number: {0}, aposteriori iteration number: {1}'.format(
+    print('Relaxtion method. Apriori iteration number: {0}, aposteriori iteration number: {1}'.format(
         estimated_num_iteration, num_iteration))
 
     return x_i
