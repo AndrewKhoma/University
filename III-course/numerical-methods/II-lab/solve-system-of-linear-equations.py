@@ -6,12 +6,13 @@ Author: Andrii Khoma
 File: solve-system-of-linear-equations
 """
 
+import sys
 import numpy as np
 from typing import Tuple, Union
 
 
-def gauss_main_by_column(a_matrix: np.ndarray, b: np.array, find_conditon_num=False) -> Union[
-    Tuple[np.array, float], Tuple[np.array, float, float]]:
+def gauss_main_by_column(a_matrix: np.ndarray, b: np.array, find_conditon_num=False) -> \
+        Union[Tuple[np.array, float], Tuple[np.array, float, float]]:
     """
 
     :param a_matrix: input matrix A[i]*x^T = b[i]
@@ -87,8 +88,65 @@ def gauss_main_by_column(a_matrix: np.ndarray, b: np.array, find_conditon_num=Fa
         return x, determinant, condition_num
 
 
+def jacobi_method(a_matrix: np.ndarray, b: np.array, eps: float) -> np.array:
+    """
+
+    :param a_matrix: input matrix A[i]*x^T = b[i]
+    :param b: value vector
+    :param eps: convergence limit
+    :return: solution vector
+    """
+
+    if a_matrix.ndim != 2 or a_matrix.shape[0] != a_matrix.shape[1]:
+        raise ValueError("A should be square matrix")
+
+    if b.ndim != 1 or b.shape[0] != a_matrix.shape[0]:
+        raise ValueError("b should be vector value")
+
+    n = a_matrix.shape[0]
+    convergence_statement = []
+    max_mult = 0.
+
+    for i in range(n):
+        max_col = np.argmax(np.abs(a_matrix[i:n, [i]])) + i
+
+        permutation_matrix = np.identity(n)
+        permutation_matrix[[i, max_col]] = permutation_matrix[[max_col, i]]
+        a_matrix = permutation_matrix @ a_matrix
+
+        convergence_statement.append(2. * np.abs(a_matrix[i, i]) > np.sum(np.abs(a_matrix), axis=1)[i])
+        max_mult = max(max_mult, (float(np.sum(np.abs(a_matrix), axis=1)[i]) / np.abs(a_matrix[i, i])) - 1.)
+
+    if not all(convergence_statement):
+        raise ValueError("Method won't converge")
+
+    iteration_num = int((np.log((1. - max_mult) * eps) / np.log(max_mult))) + 1
+    print('Number of iterations in Jacobi method: ', iteration_num, file=sys.stderr)
+
+    x = np.zeros_like(b)
+
+    for _ in range(iteration_num):
+        x_new = np.zeros_like(x)
+
+        for i in range(a_matrix.shape[0]):
+            s1 = np.dot(a_matrix[i, :i], x[:i])
+            s2 = np.dot(a_matrix[i, i + 1:], x[i + 1:])
+            x_new[i] = (b[i] - s1 - s2) / a_matrix[i, i]
+
+        if np.allclose(x, x_new, atol=1e-9, rtol=0.):
+            break
+
+        x = x_new
+
+    return x
+
+
 if __name__ == '__main__':
-    a = np.array([[10, 0, 3], [3, -1, 0], [-2, 4, 1]])
-    b_vec = np.array([7, 2, 1])
+    a = np.array([[3, -1, 1], [-1, 2, 0.5], [1, 0.5, 3]])
+    b_vec = np.array([1, 1.75, 2.5])
     (sol, det, cond_num) = gauss_main_by_column(a, b_vec, True)
-    print('X: ', sol, 'Determinant: ', np.round(det, 3), 'Condition number: ', np.round(cond_num, 3))
+    print('Solution using Gauss method: ', np.round(sol, 3), 'Determinant: ', np.round(det, 3), 'Condition number: ',
+          np.round(cond_num, 3))
+
+    sol = jacobi_method(a, b_vec, 1e-3)
+    print('Solution using Jacobi method with eps={0}: '.format(1e-3), np.round(sol, 3))
