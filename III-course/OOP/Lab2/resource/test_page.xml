@@ -1,0 +1,52 @@
+<site>
+    <page>
+        <title>Page 1</title>
+        <type>NewsPage</type>
+        <Chars>
+            <email>example@mail.com</email>
+            <newsroot>
+                <news>News 1</news>
+                <news>News 2</news>
+            </newsroot>
+            <links>
+                <link>Link A</link>
+                <link>Link B</link>
+            </links>
+            <poll>
+                <anonymous>true</anonymous>
+                <options>
+                    <option>o1</option>
+                    <option>o2</option>
+                </options>
+            </poll>
+        </Chars>
+        <authorize>false</authorize>
+    </page>
+    <page>
+        <title>Page 2</title>
+        <type>AdPage</type>
+
+        <Chars>
+            <email>test@gmail.com</email>
+
+            <newsroot>
+                <news>News 3</news>
+                <news>News 4</news>
+            </newsroot>
+            <links>
+                <link>Link AC</link>
+                <link>Link BC</link>
+            </links>
+            <poll>
+                <anonymous>false</anonymous>
+                <options>
+                    <option>o3</option>
+                    <option>o4</option>
+                    <option>o5</option>
+                </options>
+            </poll>
+
+        </Chars>
+        <authorize>true</authorize>
+    </page>
+</site>

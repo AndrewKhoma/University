@@ -1,0 +1,41 @@
+<site>
+    <page id="273817">
+        <title>Page 2</title>
+        <type>PortalPage</type>
+        <Chars>
+            <email>example@mail.com</email>
+            <links>
+                <link>Link A</link>
+                <link>Link B</link>
+            </links>
+            <poll>
+                <anonymous>true</anonymous>
+                <options>
+                    <option>A</option>
+                    <option>B</option>
+                </options>
+            </poll>
+        </Chars>
+        <authorize>false</authorize>
+    </page>
+
+    <page id="1">
+        <title>Page 1</title>
+        <type>NewsPage</type>
+        <Chars>
+            <email>example@mail.com</email>
+            <newsroot>
+                <news>News 1</news>
+                <news>News 2</news>
+            </newsroot>
+            <poll>
+                <anonymous>true</anonymous>
+                <options>
+                    <option>o1</option>
+                    <option>o2</option>
+                </options>
+            </poll>
+        </Chars>
+        <authorize>false</authorize>
+    </page>
+</site>

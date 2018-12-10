@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:simpleType name="pageType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AdPage"/>
+            <xs:enumeration value="NewsPage"/>
+            <xs:enumeration value="PortalPage"/>
+            <xs:enumeration value="MirrorPage"/>
+        </xs:restriction>
+    </xs:simpleType>
+	<xs:element name="site">
+	    <xs:complexType>
+            <xs:sequence>
+                <xs:element name="page" minOccurs="1" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="title" type="xs:string"/>
+                            <xs:element name="type" type="pageType"/>
+                            <xs:element name="Chars">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="newsroot" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="news" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="links" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="link" minOccurs="1" maxOccurs="unbounded"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="poll" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="anonymous" type="xs:boolean"/>
+                                                    <xs:element name="options">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="option" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="authorize" type="xs:boolean"/>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>	
