@@ -1,1 +1,1 @@
-I would like to offer my special thanks to @vitaliy1919 for basic logic and @damhuman for helping with generalized parsing method.
+I would like to offer my special thanks to [@vitaliy1919](https://github.com/vitaliy1919/) for basic logic and [@damhuman](https://github.com/damhuman/) for helping with generalized parsing method.
