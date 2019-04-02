@@ -27,11 +27,12 @@ class UI {
   static constexpr float kZOffset = 7.5f;
   static constexpr int kDimension = 2;
 
-  static constexpr int kDrawableObjects = 3;  // TODO(ahoma) : rewrite in observer pattern
+  static constexpr int kDrawableObjects = 4;  // TODO(ahoma) : rewrite in observer pattern
 
   const glm::vec3 kBlackColor = {0.0f, 0.0f, 0.0f};
   const glm::vec3 kOrangeColor = {1.f, 0.532210107f, 0.f};
   const glm::vec3 kRedColor = {1.f, 0.f, 0.f};
+  const glm::vec3 kBlueColor = {0.f, 0.f, 1.f};
 
   const glm::vec2 left_top = {-kDelta, -kDelta},
       left_bottom = {-kDelta, kDelta},

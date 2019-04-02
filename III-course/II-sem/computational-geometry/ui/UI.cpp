@@ -52,14 +52,17 @@ void UI::display() {
   camera_ = new Camera(sum);
 
   std::vector<glm::vec2> glm_bezier_spline = Algorithm::Bezier(glm_control_points);
+  std::vector<glm::vec2> glm_hermite_spline = Algorithm::Hermite(glm_control_points);
 
   float *control_points = CreateControlPoints(glm_control_points),
       *control_polyline = FromGLMVecToRawArray(glm_control_points),
-      *bezier_spline = FromGLMVecToRawArray(glm_bezier_spline);
+      *bezier_spline = FromGLMVecToRawArray(glm_bezier_spline),
+      *hermite_spline = FromGLMVecToRawArray(glm_hermite_spline);
 
   int ctrl_points_size = 4 * static_cast<int>(glm_control_points.size()),
       ctrl_polyline_size = static_cast<int>(glm_control_points.size()),
-      bezier_spline_size = static_cast<int>(glm_bezier_spline.size());
+      bezier_spline_size = static_cast<int>(glm_bezier_spline.size()),
+      hermite_spline_size = static_cast<int>(glm_hermite_spline.size());
 
   unsigned int VAO[kDrawableObjects], VBO[kDrawableObjects];
 
@@ -76,6 +79,8 @@ void UI::display() {
       glBufferData(GL_ARRAY_BUFFER, ctrl_polyline_size * sizeof(float) * kDimension, control_polyline, GL_STATIC_DRAW);
     } else if (i == 2) {
       glBufferData(GL_ARRAY_BUFFER, bezier_spline_size * sizeof(float) * kDimension, bezier_spline, GL_STATIC_DRAW);
+    } else if (i == 3) {
+      glBufferData(GL_ARRAY_BUFFER, hermite_spline_size * sizeof(float) * kDimension, hermite_spline, GL_STATIC_DRAW);
     }
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<void *>(0));
@@ -133,17 +138,24 @@ void UI::display() {
     glBindVertexArray(VAO[2]);
     glDrawArrays(GL_LINE_STRIP, 0, bezier_spline_size);
 
+    // render hermite spline
+    program.SetVec3f("input_color", kBlueColor);
+
+    glBindVertexArray(VAO[3]);
+    glDrawArrays(GL_LINE_STRIP, 0, hermite_spline_size);
+
     glfwSwapBuffers(window_);
     glfwPollEvents();
   }
 
-  glDeleteVertexArrays(2, VAO);
-  glDeleteBuffers(2, VBO);
+  glDeleteVertexArrays(kDrawableObjects, VAO);
+  glDeleteBuffers(kDrawableObjects, VBO);
 
   delete camera_;
   delete[] control_points;
   delete[] control_polyline;
   delete[] bezier_spline;
+  delete[] hermite_spline;
 }
 
 UI::~UI() {
