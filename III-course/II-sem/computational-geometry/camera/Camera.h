@@ -23,8 +23,8 @@ enum CameraMovement {
 
 class Camera {
   // Default camera values
-  static constexpr const float kCameraYaw = 90.0f;
-  static constexpr const float kCameraPitch = 0.0f;
+  static constexpr float kCameraYaw = 90.0f;
+  static constexpr float kCameraPitch = 0.0f;
   const float kCameraSpeed = 2.5f;
   const float kCameraSensitivity = 0.1f;
   const float kCameraZoom = 45.0f;

@@ -20,13 +20,18 @@
 
 #include "../shader/Shader.h"
 #include "../camera/Camera.h"
+#include "../algorithm/Algorithm.h"
 
 class UI {
-  static const constexpr float kDelta = 0.05f;
-  static const constexpr float kZOffset = 7.5f;
+  static constexpr float kDelta = 0.05f;
+  static constexpr float kZOffset = 7.5f;
+  static constexpr int kDimension = 2;
+
+  static constexpr int kDrawableObjects = 3;  // TODO(ahoma) : rewrite in observer pattern
 
   const glm::vec3 kBlackColor = {0.0f, 0.0f, 0.0f};
   const glm::vec3 kOrangeColor = {1.f, 0.532210107f, 0.f};
+  const glm::vec3 kRedColor = {1.f, 0.f, 0.f};
 
   const glm::vec2 left_top = {-kDelta, -kDelta},
       left_bottom = {-kDelta, kDelta},

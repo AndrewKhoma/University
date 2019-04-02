@@ -51,25 +51,31 @@ void UI::display() {
 
   camera_ = new Camera(sum);
 
-  float *control_points = CreateControlPoints(glm_control_points);
-  float *control_polyline = FromGLMVecToRawArray(glm_control_points);
+  std::vector<glm::vec2> glm_bezier_spline = Algorithm::Bezier(glm_control_points);
+
+  float *control_points = CreateControlPoints(glm_control_points),
+      *control_polyline = FromGLMVecToRawArray(glm_control_points),
+      *bezier_spline = FromGLMVecToRawArray(glm_bezier_spline);
 
   int ctrl_points_size = 4 * static_cast<int>(glm_control_points.size()),
-      ctrl_polyline_size = static_cast<int>(glm_control_points.size());
+      ctrl_polyline_size = static_cast<int>(glm_control_points.size()),
+      bezier_spline_size = static_cast<int>(glm_bezier_spline.size());
 
-  unsigned int VAO[2], VBO[2];
+  unsigned int VAO[kDrawableObjects], VBO[kDrawableObjects];
 
-  glGenVertexArrays(2, VAO);
-  glGenBuffers(2, VBO);
+  glGenVertexArrays(kDrawableObjects, VAO);
+  glGenBuffers(kDrawableObjects, VBO);
 
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < kDrawableObjects; i++) {
     glBindVertexArray(VAO[i]);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
-    if (i) {
-      glBufferData(GL_ARRAY_BUFFER, ctrl_polyline_size * sizeof(float) * 2, control_polyline, GL_STATIC_DRAW);
-    } else {
-      glBufferData(GL_ARRAY_BUFFER, ctrl_points_size * sizeof(float) * 2, control_points, GL_STATIC_DRAW);
+    if (i == 0) {
+      glBufferData(GL_ARRAY_BUFFER, ctrl_points_size * sizeof(float) * kDimension, control_points, GL_STATIC_DRAW);
+    } else if (i == 1) {
+      glBufferData(GL_ARRAY_BUFFER, ctrl_polyline_size * sizeof(float) * kDimension, control_polyline, GL_STATIC_DRAW);
+    } else if (i == 2) {
+      glBufferData(GL_ARRAY_BUFFER, bezier_spline_size * sizeof(float) * kDimension, bezier_spline, GL_STATIC_DRAW);
     }
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<void *>(0));
@@ -121,6 +127,12 @@ void UI::display() {
     glDrawArrays(GL_LINES, 0, ctrl_points_size);
     glLineWidth(1.0);
 
+    // render bezier spline
+    program.SetVec3f("input_color", kRedColor);
+
+    glBindVertexArray(VAO[2]);
+    glDrawArrays(GL_LINE_STRIP, 0, bezier_spline_size);
+
     glfwSwapBuffers(window_);
     glfwPollEvents();
   }
@@ -131,6 +143,7 @@ void UI::display() {
   delete camera_;
   delete[] control_points;
   delete[] control_polyline;
+  delete[] bezier_spline;
 }
 
 UI::~UI() {
@@ -200,7 +213,7 @@ void UI::GLFWErrorCallback(int error, const char *description) {
 }
 
 void UI::GLFWFramebufferSizeCallback(GLFWwindow *window, int width, int height) {
-  UI *ui = static_cast<UI *>(glfwGetWindowUserPointer(window));
+  auto ui = static_cast<UI *>(glfwGetWindowUserPointer(window));
   ui->FramebufferSizeCallback(window, width, height);
 }
 
@@ -211,7 +224,7 @@ void UI::FramebufferSizeCallback(GLFWwindow *, int width, int height) {
 }
 
 void UI::GLFWScrollCallback(GLFWwindow *window, double, double y_offset) {
-  UI *ui = static_cast<UI *>(glfwGetWindowUserPointer(window));
+  auto ui = static_cast<UI *>(glfwGetWindowUserPointer(window));
   ui->camera_->ProcessMouseScroll(static_cast<float>(y_offset));
 }
 
