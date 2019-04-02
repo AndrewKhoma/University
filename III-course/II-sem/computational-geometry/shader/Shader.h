@@ -25,8 +25,6 @@ class Shader {
 
   void SetMat4f(const std::string &uniform_name, glm::mat4 value) const;
 
-  unsigned int GetId() const;
-
  private:
   unsigned int __id;
 };

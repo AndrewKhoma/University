@@ -96,6 +96,3 @@ void Shader::SetVec3f(const std::string &uniform_name, glm::vec3 value) const {
   glUniform3f(glGetUniformLocation(__id, uniform_name.c_str()), value.x, value.y, value.z);
 }
 
-unsigned int Shader::GetId() const {
-  return __id;
-}

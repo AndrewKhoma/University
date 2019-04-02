@@ -39,25 +39,6 @@ void Camera::ProcessKeyboard(CameraMovement direction, float delta_time) {
     position_ -= world_right_ * velocity;
 }
 
-void Camera::ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch) {
-  x_offset *= mouse_sensitivity_;
-  y_offset *= mouse_sensitivity_;
-
-  yaw_ += x_offset;
-  pitch_ += y_offset;
-
-  // Make sure that when pitch is out of bounds, screen doesn't get flipped
-  if (constrain_pitch) {
-    if (pitch_ > 89.0f)
-      pitch_ = 89.0f;
-    if (pitch_ < -89.0f)
-      pitch_ = -89.0f;
-  }
-
-  // Update Front, __right and Up Vectors using the updated Euler angles
-  UpdateCameraVectors();
-}
-
 void Camera::ProcessMouseScroll(float y_offset) {
   if (zoom_ >= 1.0f && zoom_ <= 45.0f)
     zoom_ -= y_offset;

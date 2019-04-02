@@ -31,11 +31,11 @@ class Camera {
 
  public:
   // Constructor with vectors
-  Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-         glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f),
-         float yaw = kCameraYaw,
-         float pitch = kCameraPitch);
+  explicit Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+                  glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
+                  glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f),
+                  float yaw = kCameraYaw,
+                  float pitch = kCameraPitch);
 
   // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
   glm::mat4 GetViewMatrix();
@@ -46,9 +46,6 @@ class Camera {
   // Processes input received from any keyboard-like input system.
   // Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
   void ProcessKeyboard(CameraMovement direction, float delta_time);
-
-  // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-  void ProcessMouseMovement(float x_offset, float y_offset, bool constrain_pitch = true);
 
   // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
   void ProcessMouseScroll(float y_offset);
@@ -73,4 +70,4 @@ class Camera {
   void UpdateCameraVectors();
 };
 
-#endif //III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_CAMERA_CAMERA_H_
+#endif  // III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_CAMERA_CAMERA_H_
