@@ -2,7 +2,7 @@
 // Created by Andrii Khoma on 02/04/19.
 // All rights reserved.
 
-#include "Algorithm.h"
+#include "../include/Algorithm.h"
 
 std::vector<glm::vec2> Algorithm::Bezier(const std::vector<glm::vec2> &points) {
   std::vector<glm::vec2> result;

@@ -3,7 +3,7 @@
 // Copyright (c) 2019 Andrii Khoma. All rights reserved.
 //
 
-#include "Shader.h"
+#include "../include/Shader.h"
 
 void CheckCompileErrors(unsigned int shader, const std::string &type) {
   int success;
@@ -19,7 +19,7 @@ void CheckCompileErrors(unsigned int shader, const std::string &type) {
 
       glGetShaderInfoLog(shader, info_log_size + 10, nullptr, info_log);
       std::cerr << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << info_log
-                << "\n -- --------------------------------------------------- -- " << std::endl;
+                << "\n ------------------------------------------------------- " << std::endl;
 
       delete[] info_log;
     }
@@ -32,7 +32,7 @@ void CheckCompileErrors(unsigned int shader, const std::string &type) {
 
       glGetProgramInfoLog(shader, info_log_size + 10, nullptr, info_log);
       std::cerr << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << info_log
-                << "\n -- --------------------------------------------------- -- " << std::endl;
+                << "\n ------------------------------------------------------- " << std::endl;
 
       delete[] info_log;
     }

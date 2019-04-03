@@ -2,7 +2,7 @@
 // Created by Andrii Khoma on 02/04/19.
 // All rights reserved.
 
-#include "Camera.h"
+#include "../include/Camera.h"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 right, float zoom) :
     front_(glm::vec3(0.0f, 0.0f, 1.0f)),

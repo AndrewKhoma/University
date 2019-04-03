@@ -3,8 +3,8 @@
 // Copyright (c) 2019 Andrii Khoma. All rights reserved.
 //
 
-#ifndef III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_DRAWABLEOBJECT_H_
-#define III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_DRAWABLEOBJECT_H_
+#ifndef III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_SRC_DRAWABLEOBJECT_H_
+#define III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_SRC_DRAWABLEOBJECT_H_
 
 #include <glad/glad.h>
 
@@ -35,4 +35,4 @@ class DrawableObject {
   void Init(float *points, int size, GLenum drawing_mode, float line_width = kDefaultLineWidth);
 };
 
-#endif  // III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_DRAWABLEOBJECT_H_
+#endif  // III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_SRC_DRAWABLEOBJECT_H_

@@ -3,7 +3,7 @@
 // Copyright (c) 2019 Andrii Khoma. All rights reserved.
 //
 
-#include "ui/UI.h"
+#include "UI.h"
 
 const int kWidth = 800;
 const int kHeight = 600;

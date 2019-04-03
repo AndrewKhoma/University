@@ -2,8 +2,8 @@
 // Created by Andrii Khoma on 03/04/19.
 // All rights reserved.
 
-#ifndef III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_DRAWABLEOBSERVER_H_
-#define III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_DRAWABLEOBSERVER_H_
+#ifndef III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_SRC_DRAWABLEOBSERVER_H_
+#define III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_SRC_DRAWABLEOBSERVER_H_
 
 #include <string>
 #include <vector>
@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 
 #include "DrawableObject.h"
-#include "../shader/Shader.h"
+#include "Shader.h"
 
 class DrawableObserver {
  public:
@@ -33,4 +33,4 @@ class DrawableObserver {
   std::string color_uniform_name_;
 };
 
-#endif  // III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_DRAWABLEOBSERVER_H_
+#endif  // III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_SRC_DRAWABLEOBSERVER_H_
