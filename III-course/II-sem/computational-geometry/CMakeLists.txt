@@ -10,8 +10,12 @@ find_package(X11 REQUIRED)
 
 set(LIBS ${GLFW3_LIBRARY} glfw X11 Xrandr Xinerama Xi Xxf86vm Xcursor GL dl pthread ${ASSIMP_LIBRARY})
 
+<<<<<<< HEAD
 add_executable(comp-geom glad.c main.cpp shader/Shader.cpp shader/Shader.h camera/Camera.cpp camera/Camera.h
         ui/UI.cpp ui/UI.h algorithm/Algorithm.cpp algorithm/Algorithm.h)
+=======
+add_executable(comp-geom glad.c main.cpp shader/Shader.cpp shader/Shader.h camera/Camera.cpp camera/Camera.h ui/UI.cpp ui/UI.h algorithm/Algorithm.cpp algorithm/Algorithm.h)
+>>>>>>> 7ab752f8ac16d346e8d0edaf85c770bdffc63d01
 
 configure_file(resources/shader.frag resources/shader.frag COPYONLY)
 configure_file(resources/shader.vert resources/shader.vert COPYONLY)
