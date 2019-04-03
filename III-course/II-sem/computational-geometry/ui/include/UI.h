@@ -5,18 +5,8 @@
 #ifndef III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_INCLUDE_UI_H_
 #define III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_UI_INCLUDE_UI_H_
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <algorithm>
-#include <iostream>
-#include <vector>
 #include <string>
-#include <cmath>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <vector>
 
 #include "Shader.h"
 #include "Camera.h"
