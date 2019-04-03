@@ -9,6 +9,7 @@ UI::UI(unsigned int width, unsigned int height, std::string program_name) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
   glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
+  glfwWindowHint(GLFW_SAMPLES, 5);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   win_width_ = width, win_height_ = height;
@@ -37,6 +38,17 @@ UI::UI(unsigned int width, unsigned int height, std::string program_name) {
   glfwSetFramebufferSizeCallback(window_, GLFWFramebufferSizeCallback);
   glfwSetWindowFocusCallback(window_, GLFWWindowFocusCallback);
   glfwSetDropCallback(window_, GLFWDropCallback);
+
+  glEnable(GL_BLEND);
+
+  glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_POLYGON_SMOOTH);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void UI::display() {
@@ -87,9 +99,6 @@ void UI::display() {
     glEnableVertexAttribArray(0);
   }
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glEnable(GL_LINE_SMOOTH);
-
   Shader program("resources/shader.vert", "resources/shader.frag");
   program.Use();
 
@@ -108,8 +117,8 @@ void UI::display() {
     projection =
         glm::perspective(glm::radians(camera_->GetZoom()),
                          static_cast<float>(win_width_) / static_cast<float>(win_height_),
-                         0.1f,
-                         100.0f);
+                         1.f,
+                         1.5f * kZOffset);
 
     // camera/view transformation
     view = camera_->GetViewMatrix();
