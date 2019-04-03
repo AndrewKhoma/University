@@ -17,6 +17,8 @@
 
 class Shader {
  public:
+  Shader() : __id(0) {}
+
   Shader(const GLchar *vertex_shader_path, const GLchar *fragment_shader_path);
 
   void Use();

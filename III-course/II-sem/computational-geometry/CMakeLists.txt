@@ -10,8 +10,11 @@ find_package(X11 REQUIRED)
 
 set(LIBS ${GLFW3_LIBRARY} glfw X11 Xrandr Xinerama Xi Xxf86vm Xcursor GL dl pthread ${ASSIMP_LIBRARY})
 
+# TODO(ahoma): make modular CMake structure
+
 add_executable(comp-geom glad.c main.cpp shader/Shader.cpp shader/Shader.h camera/Camera.cpp camera/Camera.h
-        ui/UI.cpp ui/UI.h algorithm/Algorithm.cpp algorithm/Algorithm.h ui/DrawableObject.cpp ui/DrawableObject.h)
+        ui/UI.cpp ui/UI.h algorithm/Algorithm.cpp algorithm/Algorithm.h
+        ui/DrawableObject.cpp ui/DrawableObject.h ui/DrawableObserver.cpp ui/DrawableObserver.h)
 
 configure_file(resources/shader.frag resources/shader.frag COPYONLY)
 configure_file(resources/shader.vert resources/shader.vert COPYONLY)

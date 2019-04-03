@@ -5,13 +5,16 @@
 
 #include "ui/UI.h"
 
-const int kWidth = 600;
-const int kHeight = 400;
+const int kWidth = 800;
+const int kHeight = 600;
 
 int main() {
   UI program(kWidth, kHeight, "Computational geometry");
 
-  program.display();
+  std::vector<glm::vec2>
+      points{glm::vec2(2.0f, 2.0f), glm::vec2(4.0f, 4.0f), glm::vec2(6.0f, 4.0f), glm::vec2(9.0f, 1.0f)};
+
+  program.display(points);
 
   return 0;
 }

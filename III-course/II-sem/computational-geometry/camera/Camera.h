@@ -23,19 +23,20 @@ enum CameraMovement {
 
 class Camera {
   // Default camera values
-  static constexpr float kCameraYaw = 90.0f;
-  static constexpr float kCameraPitch = 0.0f;
+  const float kCameraYaw = -90.0f;
+  const float kCameraPitch = 0.0f;
+
+  const float kZoomMin = 1.0f;
+  const float kZoomMax = 150.0f;
   const float kCameraSpeed = 2.5f;
-  const float kCameraSensitivity = 0.1f;
-  const float kCameraZoom = 45.0f;
 
  public:
+  static constexpr float kCameraDefaultZoom = 45.0f;
   // Constructor with vectors
   explicit Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
                   glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
                   glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f),
-                  float yaw = kCameraYaw,
-                  float pitch = kCameraPitch);
+                  float zoom = kCameraDefaultZoom);
 
   // Returns the view matrix calculated using Euler Angles and the LookAt Matrix
   glm::mat4 GetViewMatrix();
@@ -54,20 +55,13 @@ class Camera {
   // Camera Attributes
   glm::vec3 position_;
   glm::vec3 front_;
-  glm::vec3 up_;
-  glm::vec3 right_;
   glm::vec3 world_up_;
   glm::vec3 world_right_;
-  // Euler Angles
-  float yaw_;
-  float pitch_;
+
   // Camera options
   float movement_speed_;
-  float mouse_sensitivity_;
   float zoom_;
-
-  // Calculates the front vector from the Camera's (updated) Euler Angles
-  void UpdateCameraVectors();
 };
 
 #endif  // III_COURSE_II_SEM_COMPUTATIONAL_GEOMETRY_CAMERA_CAMERA_H_
+

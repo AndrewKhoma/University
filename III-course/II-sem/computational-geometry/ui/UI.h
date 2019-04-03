@@ -22,27 +22,33 @@
 #include "../camera/Camera.h"
 #include "../algorithm/Algorithm.h"
 
+#include "DrawableObserver.h"
+
+const float kDelta = 0.05f;
+
+// TODO(ahoma): create file additions.h and replace all helpers right there
+
+const glm::vec3
+    kBlackColor = {0.0f, 0.0f, 0.0f},
+    kRedColor = {1.f, 0.f, 0.f},
+    kGreenColor = {0.f, 1.f, 0.f},
+    kBlueColor = {0.f, 0.f, 1.f};
+
+const glm::vec2
+    left_top = {-kDelta, -kDelta},
+    left_bottom = {-kDelta, kDelta},
+    right_top = {kDelta, -kDelta},
+    right_bottom = {kDelta, kDelta};
+
 class UI {
-  static constexpr float kDelta = 0.05f;
-  static constexpr float kZOffset = 7.5f;
-  static constexpr int kDimension = 2;
+  const float kZMinOffset = 0.01f;
 
-  static constexpr int kDrawableObjects = 4;  // TODO(ahoma) : rewrite in observer pattern
-
-  const glm::vec3 kBlackColor = {0.0f, 0.0f, 0.0f};
-  const glm::vec3 kOrangeColor = {1.f, 0.532210107f, 0.f};
-  const glm::vec3 kRedColor = {1.f, 0.f, 0.f};
-  const glm::vec3 kBlueColor = {0.f, 0.f, 1.f};
-
-  const glm::vec2 left_top = {-kDelta, -kDelta},
-      left_bottom = {-kDelta, kDelta},
-      right_top = {kDelta, -kDelta},
-      right_bottom = {kDelta, kDelta};
+  const int kMinX = -1000, kMaxX = 1000, kMinY = -1000, kMaxY = 1000;
 
  public:
   UI(unsigned int width, unsigned int height, std::string program_name);
 
-  void display();
+  void display(const std::vector<glm::vec2> &points);
 
   ~UI();
 
@@ -53,23 +59,16 @@ class UI {
 
   float delta_time_, last_frame_;
 
-  float *CreateControlPoints(const std::vector<glm::vec2> &points);
-
-  float *FromGLMVecToRawArray(const std::vector<glm::vec2> &points);
+  Shader shader_program;
+  DrawableObserver painter;
 
   void ProcessInput(GLFWwindow *window);
-
-  void SetWindowCentered(GLFWwindow *window);
-
-  static void GLFWErrorCallback(int error, const char *description);
 
   static void GLFWFramebufferSizeCallback(GLFWwindow *window, int width, int height);
 
   void FramebufferSizeCallback(GLFWwindow *, int width, int height);
 
   static void GLFWScrollCallback(GLFWwindow *, double, double y_offset);
-
-  static void GLFWWindowFocusCallback(GLFWwindow *window, int focused);
 
   static void GLFWDropCallback(GLFWwindow *, int count, const char **paths);
 };
