@@ -1,0 +1,19 @@
+plugins {
+    id 'application'
+    id 'java'
+}
+
+group 'Distributed computations'
+version '1.0.0'
+
+sourceCompatibility = 1.8
+
+mainClassName = 'org.ahoma.LifeSimulation'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
