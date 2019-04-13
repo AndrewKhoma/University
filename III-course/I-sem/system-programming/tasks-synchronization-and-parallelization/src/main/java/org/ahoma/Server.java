@@ -21,11 +21,15 @@ class Server {
 
   private final List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
 
-  private static Server instance = null;
+  private static volatile Server instance = null;
 
   static Server open(String bindAddr, int bindPort, int variable, int connectionNum)
       throws IOException {
-    if (instance == null) instance = new Server(bindAddr, bindPort, variable, connectionNum);
+    if (instance == null) {
+      synchronized (Server.class) {
+        if (instance == null) instance = new Server(bindAddr, bindPort, variable, connectionNum);
+      }
+    }
 
     return instance;
   }
@@ -85,21 +89,20 @@ class Server {
         });
   }
 
-  private void startRead(AsynchronousSocketChannel sockChannel) {
+  private synchronized void startRead(AsynchronousSocketChannel sockChannel) {
     final ByteBuffer buffer = ByteBuffer.allocate(Constants.BSIZE);
     Future<Integer> readVal = sockChannel.read(buffer);
-    synchronized (clientResponse) {
-      clientResponse.add(Pair.createPair(buffer, readVal));
-    }
+    clientResponse.add(Pair.createPair(buffer, readVal));
   }
 
-  synchronized List<Pair<ByteBuffer, Future<Integer>>> getClientResponce() {
+  List<Pair<ByteBuffer, Future<Integer>>> getClientResponse() {
     return clientResponse;
   }
 
-  synchronized List<Pair<ByteBuffer, Future<Integer>>> getAndClearClientResponce() {
+  synchronized List<Pair<ByteBuffer, Future<Integer>>> getAndClearClientResponse() {
     List<Pair<ByteBuffer, Future<Integer>>> result = new ArrayList<>(clientResponse);
     clientResponse.clear();
+    assert result.size() != 0;
     return result;
   }
 }

@@ -33,7 +33,7 @@ class Client {
 
           @Override
           public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-            System.out.println("fail to connect to server");
+            System.out.println("Failed to connect to server");
           }
         });
   }
@@ -47,9 +47,11 @@ class Client {
 
           @Override
           public void completed(Integer result, AsynchronousSocketChannel channel) {
-            int variable = buf.getInt(0);
-            int computationResult = personalFunction.function(variable);
-            startWrite(channel, computationResult);
+            if (result != -1) {
+              int variable = buf.getInt(0);
+              int computationResult = personalFunction.function(variable);
+              startWrite(channel, computationResult);
+            }
           }
 
           @Override

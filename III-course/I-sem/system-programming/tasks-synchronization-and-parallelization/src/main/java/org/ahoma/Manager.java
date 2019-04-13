@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class Manager {
@@ -16,57 +17,73 @@ public class Manager {
   private static final int port = 31415;
   private static final int connectionNumber = 2;
 
-  private static ComputationProcess compute;
+  private static ComputationManager compute;
   private static Server server;
   private static List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
+
+  private static boolean calculationsEnabled;
 
   public static void main(String[] args) throws IOException {
     Runtime.getRuntime().addShutdownHook(new Thread(Manager::quit));
 
     Scanner sc = new Scanner(System.in);
     int variable = 0;
-    boolean correctResponce = false;
-    while (!correctResponce) {
+    boolean correctResponse = false;
+    while (!correctResponse) {
       System.out.println("Type x parameter value:");
-      correctResponce = true;
+      correctResponse = true;
       if (sc.hasNextInt()) {
         variable = sc.nextInt();
         sc.nextLine();
       } else {
-        correctResponce = false;
+        correctResponse = false;
         sc.nextLine();
       }
     }
 
+    calculationsEnabled = true;
+    startComputation(variable, connectionNumber, true);
+    // TODO(ahoma): add computation manager as parameter
+    // TODO(ahoma): add client functions as variadic parameter
+    // TODO(ahoma): rewrite Manager as singleton and add Demonstration class
+  }
+
+  private static void startComputation(int value, int clientConnectionNumber, boolean promptEnable)
+      throws IOException {
     compute =
-        new ComputationProcess(connectionNumber, 0, (integer, integer2) -> integer & integer2);
-    server = Server.open("localhost", port, variable, connectionNumber);
+        new ComputationManager(
+            clientConnectionNumber, 0, (integer, integer2) -> integer * integer2);
+    server = Server.open("localhost", port, value, clientConnectionNumber);
 
-    new Client("localhost", port, x -> 42);
+    new Client(
+        "localhost",
+        port,
+        x -> {
+          try {
+            Thread.sleep(4000);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+          return 42;
+        });
 
-    new Client("localhost", port, new FuncitonF());
+    new Client("localhost", port, new FunctionF());
 
-    boolean promptEnable = true;
-    long lastPromptTime = System.currentTimeMillis();
     clientResponse = new ArrayList<>();
 
-    while (true) {
-      if (!compute.isComputed()) {
-        tryToCompute();
-      }
+    boolean correctResponse;
+    Scanner sc = new Scanner(System.in);
 
-      if (compute.isComputed()) {
-        System.exit(0);
-      }
-
+    long lastPromptTime = System.currentTimeMillis();
+    while (calculationsEnabled) {
       if (promptEnable && (System.currentTimeMillis() - lastPromptTime) > timeDeltaMillis) {
-        correctResponce = false;
+        correctResponse = false;
         System.out.println("Computation process taking too long. Would you like to:");
-        while (!correctResponce) {
+        while (!correctResponse) {
           System.out.println("(a) continue");
           System.out.println("(b) continue without prompt");
           System.out.println("(c) cancel");
-          correctResponce = true;
+          correctResponse = true;
           String line = sc.nextLine().toLowerCase();
           switch (line) {
             case "a":
@@ -81,25 +98,46 @@ public class Manager {
               }
             case "c":
               {
-                System.exit(0);
+                calculationsEnabled = false;
                 break;
               }
             default:
-              correctResponce = false;
+              correctResponse = false;
               System.out.println("Incorrect response: " + line);
           }
         }
       }
+
+      if (!compute.isComputed()) {
+        tryToComputeResult();
+      }
+
+      if (compute.isComputed()) {
+        calculationsEnabled = false;
+      }
     }
   }
 
-  private static void tryToCompute() {
-    if (server.getClientResponce().size() > 0) {
-      clientResponse.addAll(server.getAndClearClientResponce());
+  private static void interruptCalculation() {
+    calculationsEnabled = false;
+  }
+
+  private static void tryToComputeResult() {
+    if (server.getClientResponse().size() > 0) {
+      clientResponse.addAll(server.getAndClearClientResponse());
     }
 
     for (Pair<ByteBuffer, Future<Integer>> var : clientResponse) {
       if (var.getSecond().isDone() && !var.isChecked()) {
+        try {
+          var.getSecond().get();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+          System.out.println("Result computation was interrupted");
+        } catch (ExecutionException e) {
+          e.printStackTrace();
+        }
+
         compute.add(var.getFirst().getInt(0));
         var.setChecked();
       }
@@ -107,7 +145,7 @@ public class Manager {
   }
 
   private static void quit() {
-    tryToCompute();
+    tryToComputeResult();
     if (compute.isComputed()) System.out.println("Computation result: " + compute.getResult());
     else System.out.println("Computation result is undefined");
   }

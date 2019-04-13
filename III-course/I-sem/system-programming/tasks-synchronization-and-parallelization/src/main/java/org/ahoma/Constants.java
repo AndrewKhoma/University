@@ -5,5 +5,5 @@ package org.ahoma;
  */
 
 class Constants {
-  static final int BSIZE = 1024;
+  static final int BSIZE = 4;
 }
