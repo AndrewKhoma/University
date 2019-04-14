@@ -38,7 +38,7 @@ class Client {
         });
   }
 
-  private void startRead(final AsynchronousSocketChannel sockChannel) {
+  private synchronized void startRead(final AsynchronousSocketChannel sockChannel) {
     final ByteBuffer buf = ByteBuffer.allocate(Constants.BSIZE);
     sockChannel.read(
         buf,
@@ -61,7 +61,8 @@ class Client {
         });
   }
 
-  private void startWrite(final AsynchronousSocketChannel sockChannel, int compResult) {
+  private synchronized void startWrite(
+      final AsynchronousSocketChannel sockChannel, int compResult) {
     ByteBuffer buf = ByteBuffer.allocate(Constants.BSIZE);
     buf.asIntBuffer().put(compResult);
     sockChannel.write(

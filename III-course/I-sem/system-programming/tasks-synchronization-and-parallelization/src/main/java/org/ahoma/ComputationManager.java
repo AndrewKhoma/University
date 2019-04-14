@@ -7,7 +7,7 @@ package org.ahoma;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 
-class ComputationManager {
+public class ComputationManager {
   private BiFunction<Integer, Integer, Integer> function;
   private int argumentsNum;
   private int nowCalculated;
@@ -17,15 +17,27 @@ class ComputationManager {
   private AtomicBoolean startedComputing;
   private AtomicBoolean computed;
 
-  ComputationManager(int argNum, int zeroVal, BiFunction<Integer, Integer, Integer> operation) {
-    argumentsNum = argNum;
+  public ComputationManager(int zeroVal, BiFunction<Integer, Integer, Integer> operation) {
     zeroValue = zeroVal;
     function = operation;
+    nowCalculated = 0;
     startedComputing = new AtomicBoolean(false);
     computed = new AtomicBoolean(false);
   }
 
-  void add(Integer val) {
+  ComputationManager(int argNum, int zeroVal, BiFunction<Integer, Integer, Integer> operation) {
+    this(zeroVal, operation);
+    argumentsNum = argNum;
+  }
+
+  synchronized void resetArgumentNumber(int newArgNum) {
+    argumentsNum = newArgNum;
+    nowCalculated = 0;
+    startedComputing.set(false);
+    computed.set(false);
+  }
+
+  synchronized void add(Integer val) {
     if (startedComputing.get()) result = function.apply(result, val);
     else {
       result = val;
@@ -38,11 +50,19 @@ class ComputationManager {
     if (result == zeroValue) computed.compareAndSet(false, true);
   }
 
-  boolean isComputed() {
+  public synchronized boolean isComputed() {
     return computed.get();
   }
 
-  int getResult() {
+  public synchronized int getResult() {
     return result;
+  }
+
+  public synchronized int getNowCalculated() {
+    return nowCalculated;
+  }
+
+  public synchronized int getZeroValue() {
+    return zeroValue;
   }
 }

@@ -11,65 +11,51 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 
-public class Manager {
+class MainManager {
   private static final long timeDeltaMillis = 1000;
-  private static final int port = 31415;
-  private static final int connectionNumber = 2;
 
-  private static ComputationManager compute;
-  private static Server server;
-  private static List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
+  private ComputationManager compute;
+  private Server server;
+  private List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
+  private Function<Integer, Integer>[] clientFunctions;
+  private int serverPort;
 
-  private static boolean calculationsEnabled;
+  private boolean calculationsEnabled;
+  private boolean promptEnable;
 
-  public static void main(String[] args) throws IOException {
-    Runtime.getRuntime().addShutdownHook(new Thread(Manager::quit));
+  @SafeVarargs
+  MainManager(
+      boolean promptEnable,
+      int value,
+      int port,
+      int clientConnectionNumber,
+      ComputationManager computationManager,
+      Function<Integer, Integer>... clientFunctions)
+      throws IOException {
 
-    Scanner sc = new Scanner(System.in);
-    int variable = 0;
-    boolean correctResponse = false;
-    while (!correctResponse) {
-      System.out.println("Type x parameter value:");
-      correctResponse = true;
-      if (sc.hasNextInt()) {
-        variable = sc.nextInt();
-        sc.nextLine();
-      } else {
-        correctResponse = false;
-        sc.nextLine();
-      }
-    }
-
+    Runtime.getRuntime().addShutdownHook(new Thread(this::quit));
+    compute = computationManager;
+    compute.resetArgumentNumber(clientConnectionNumber);
+    serverPort = port;
     calculationsEnabled = true;
-    startComputation(variable, connectionNumber, true);
-    // TODO(ahoma): add computation manager as parameter
-    // TODO(ahoma): add client functions as variadic parameter
-    // TODO(ahoma): rewrite Manager as singleton and add Demonstration class
+    server = new Server("localhost", port, value, clientConnectionNumber);
+    clientResponse = new ArrayList<>();
+    assert clientFunctions.length == clientConnectionNumber;
+    this.clientFunctions = clientFunctions;
+    this.promptEnable = promptEnable;
   }
 
-  private static void startComputation(int value, int clientConnectionNumber, boolean promptEnable)
-      throws IOException {
-    compute =
-        new ComputationManager(
-            clientConnectionNumber, 0, (integer, integer2) -> integer * integer2);
-    server = Server.open("localhost", port, value, clientConnectionNumber);
-
-    new Client(
-        "localhost",
-        port,
-        x -> {
-          try {
-            Thread.sleep(4000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-          return 42;
-        });
-
-    new Client("localhost", port, new FunctionF());
-
-    clientResponse = new ArrayList<>();
+  @SuppressWarnings("StatementWithEmptyBody")
+  void startComputing() {
+    for (Function<Integer, Integer> function : clientFunctions) {
+      try {
+        new Client("localhost", serverPort, function::apply);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
 
     boolean correctResponse;
     Scanner sc = new Scanner(System.in);
@@ -84,6 +70,7 @@ public class Manager {
           System.out.println("(b) continue without prompt");
           System.out.println("(c) cancel");
           correctResponse = true;
+          while (!sc.hasNextLine()) ;
           String line = sc.nextLine().toLowerCase();
           switch (line) {
             case "a":
@@ -118,11 +105,11 @@ public class Manager {
     }
   }
 
-  private static void interruptCalculation() {
+  public synchronized void interruptCalculation() {
     calculationsEnabled = false;
   }
 
-  private static void tryToComputeResult() {
+  private void tryToComputeResult() {
     if (server.getClientResponse().size() > 0) {
       clientResponse.addAll(server.getAndClearClientResponse());
     }
@@ -144,9 +131,10 @@ public class Manager {
     }
   }
 
-  private static void quit() {
+  public synchronized void quit() {
     tryToComputeResult();
     if (compute.isComputed()) System.out.println("Computation result: " + compute.getResult());
     else System.out.println("Computation result is undefined");
+    System.out.flush();
   }
 }

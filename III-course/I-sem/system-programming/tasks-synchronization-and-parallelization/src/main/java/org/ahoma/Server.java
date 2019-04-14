@@ -21,20 +21,7 @@ class Server {
 
   private final List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
 
-  private static volatile Server instance = null;
-
-  static Server open(String bindAddr, int bindPort, int variable, int connectionNum)
-      throws IOException {
-    if (instance == null) {
-      synchronized (Server.class) {
-        if (instance == null) instance = new Server(bindAddr, bindPort, variable, connectionNum);
-      }
-    }
-
-    return instance;
-  }
-
-  private Server(String bindAddr, int bindPort, int variable, int connNum) throws IOException {
+  Server(String bindAddr, int bindPort, int variable, int connNum) throws IOException {
     InetSocketAddress sockAddr = new InetSocketAddress(bindAddr, bindPort);
 
     AtomicInteger currConnection = new AtomicInteger(0);

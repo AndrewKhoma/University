@@ -6,7 +6,11 @@ plugins {
 group 'system-programming'
 version '1.0.0'
 
-mainClassName = 'org.ahoma.Manager'
+mainClassName = 'org.ahoma.Demonstration'
+
+run {
+    standardInput = System.in
+}
 
 sourceCompatibility = 1.8
 
@@ -14,7 +18,12 @@ repositories {
     jcenter()
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.0'
     compile group: 'org.jetbrains', name: 'annotations', version: '17.0.0'
 }
