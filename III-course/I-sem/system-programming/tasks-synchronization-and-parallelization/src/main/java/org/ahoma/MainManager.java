@@ -4,10 +4,11 @@ package org.ahoma;
  * Copyright (C) 2019 Andrii Khoma. All rights reserved.
  */
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -24,6 +25,7 @@ class MainManager {
 
   private boolean calculationsEnabled;
   private boolean promptEnable;
+  private boolean clientsSpawned;
 
   @SafeVarargs
   MainManager(
@@ -45,18 +47,63 @@ class MainManager {
     assert clientFunctions.length == clientConnectionNumber;
     this.clientFunctions = clientFunctions;
     this.promptEnable = promptEnable;
+    clientsSpawned = false;
+  }
+
+  void startComputing() {
+    try {
+      server.startServing();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    String classPath =
+        Objects.requireNonNull(MainManager.class.getClassLoader().getResource(".")).toString();
+
+    int index = classPath.lastIndexOf("/test/");
+    if (index != -1) classPath = classPath.substring(0, index) + "/main/";
+    synchronized (this) {
+      for (Function<Integer, Integer> function : clientFunctions) {
+        ClientParameter clientParameter =
+            new ClientParameter(
+                "localhost", serverPort, (Function<Integer, Integer> & Serializable) function);
+        String clientParamName = "client-param-" + System.currentTimeMillis();
+
+        try {
+          clientParameter.serialize(clientParamName);
+          ProcessBuilder broker =
+              new ProcessBuilder("java", "-cp", classPath, "org.ahoma.Client", clientParamName);
+          Process runBroker = broker.start();
+
+          synchronized (System.out) {
+            Reader reader = new InputStreamReader(runBroker.getInputStream());
+            int ch;
+            BufferedWriter writer =
+                new BufferedWriter(new FileWriter("test-report-" + System.currentTimeMillis()));
+            while ((ch = reader.read()) != -1) writer.write((char) ch);
+            reader.close();
+            writer.close();
+          }
+
+          runBroker.waitFor();
+
+          System.out.println("Program complete");
+        } catch (IOException | InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+      clientsSpawned = true;
+    }
+
+    startInteraction();
+  }
+
+  synchronized boolean isClientsSpawned() {
+    return clientsSpawned;
   }
 
   @SuppressWarnings("StatementWithEmptyBody")
-  void startComputing() {
-    for (Function<Integer, Integer> function : clientFunctions) {
-      try {
-        new Client("localhost", serverPort, function::apply);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-
+  private void startInteraction() {
     boolean correctResponse;
     Scanner sc = new Scanner(System.in);
 

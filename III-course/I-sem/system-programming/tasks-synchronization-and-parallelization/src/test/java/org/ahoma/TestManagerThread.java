@@ -42,6 +42,10 @@ public class TestManagerThread extends Thread {
     mainManager.interruptCalculation();
   }
 
+  public synchronized boolean clientsSpawned() {
+    return mainManager.isClientsSpawned();
+  }
+
   public synchronized void stopCalculation() {
     mainManager.quit();
   }

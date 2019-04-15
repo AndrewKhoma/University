@@ -1,87 +1,104 @@
 package org.ahoma;
-
 /*
- * Created by ahoma on 07/04/2019.
+ * Created by ahoma on 15/04/2019.
  * Copyright (C) 2019 Andrii Khoma. All rights reserved.
  */
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.CompletionHandler;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-class Client {
+public class Client {
+  private static ClientParameter clientParameter;
 
-  private FunctionRunner personalFunction;
+  public static void main(String[] args) {
+    if (args.length != 1) {
+      System.out.println("Incorrect usage. Specify client parameter file name");
+    }
 
-  Client(String host, int port, FunctionRunner function) throws IOException {
+    System.out.println("client stated");
+    Object parameterClass;
+    clientParameter = null;
+    try {
+      System.out.println("Serialization started");
+      File inputFile = new File(args[0]);
+      System.out.println("Input file " + args[0]);
+      ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(inputFile));
+      System.out.println("Forming output stream");
+      parameterClass = inputStream.readObject();
+      System.out.println("Read object");
+      clientParameter = (ClientParameter) parameterClass;
+    } catch (IOException exc) {
+      exc.printStackTrace();
+      System.out.println("Can't open file");
+      System.exit(0);
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
 
-    personalFunction = function;
+    try {
+      startClient();
+    } catch (IOException e) {
+      System.out.println("Can't create client");
+    }
+  }
+
+  @SuppressWarnings("StatementWithEmptyBody")
+  private static void startClient() throws IOException {
     AsynchronousSocketChannel sockChannel = AsynchronousSocketChannel.open();
 
     // try to connect to the server side
-    sockChannel.connect(
-        new InetSocketAddress(host, port),
-        sockChannel,
-        new CompletionHandler<Void, AsynchronousSocketChannel>() {
-          @Override
-          public void completed(Void result, AsynchronousSocketChannel channel) {
-            // start to read message
-            startRead(channel);
-          }
+    Future<Void> isConnected =
+        sockChannel.connect(
+            new InetSocketAddress(clientParameter.getAddress(), clientParameter.getPort()));
 
-          @Override
-          public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-            System.out.println("Failed to connect to server");
-          }
-        });
-  }
+    while (!isConnected.isDone()) ; // Trying to connect to server
 
-  private synchronized void startRead(final AsynchronousSocketChannel sockChannel) {
-    final ByteBuffer buf = ByteBuffer.allocate(Constants.BSIZE);
-    sockChannel.read(
-        buf,
-        sockChannel,
-        new CompletionHandler<Integer, AsynchronousSocketChannel>() {
+    try {
+      isConnected.get();
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
+    }
 
-          @Override
-          public void completed(Integer result, AsynchronousSocketChannel channel) {
-            if (result != -1) {
-              int variable = buf.getInt(0);
-              int computationResult = personalFunction.function(variable);
-              startWrite(channel, computationResult);
-            }
-          }
+    System.out.println("Connected to server");
+    ByteBuffer buffer = ByteBuffer.allocate(Constants.BSIZE);
+    Future<Integer> readWrite = sockChannel.read(buffer);
 
-          @Override
-          public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-            System.out.println("fail to read message from server");
-          }
-        });
-  }
+    while (!readWrite.isDone()) ; // Trying to read from server
 
-  private synchronized void startWrite(
-      final AsynchronousSocketChannel sockChannel, int compResult) {
-    ByteBuffer buf = ByteBuffer.allocate(Constants.BSIZE);
-    buf.asIntBuffer().put(compResult);
-    sockChannel.write(
-        buf,
-        sockChannel,
-        new CompletionHandler<Integer, AsynchronousSocketChannel>() {
-          @Override
-          public void completed(Integer result, AsynchronousSocketChannel channel) {
-            try {
-              channel.close();
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-          }
+    System.out.println("Read from server");
+    int result = -1;
+    try {
+      result = readWrite.get();
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
+    }
 
-          @Override
-          public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-            System.out.println("Fail to write the message to server");
-          }
-        });
+    int computationResult = 0;
+    if (result != -1) {
+      int variable = buffer.getInt(0);
+      computationResult = clientParameter.getFunction().apply(variable);
+    }
+
+    buffer.flip();
+    buffer.asIntBuffer().put(computationResult);
+    readWrite = sockChannel.write(buffer);
+
+    while (!readWrite.isDone()) ; // Trying to write on server
+
+    try {
+      readWrite.get();
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println("Message sent");
+    sockChannel.close();
   }
 }

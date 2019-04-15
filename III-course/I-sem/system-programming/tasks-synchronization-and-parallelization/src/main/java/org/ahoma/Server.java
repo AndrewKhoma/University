@@ -20,16 +20,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 class Server {
 
   private final List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
+  private String address;
+  private int port;
+  private int variable;
+  private int maxConnectionNumber;
 
-  Server(String bindAddr, int bindPort, int variable, int connNum) throws IOException {
-    InetSocketAddress sockAddr = new InetSocketAddress(bindAddr, bindPort);
-
-    AtomicInteger currConnection = new AtomicInteger(0);
+  Server(String bindAddr, int bindPort, int variable, int connNum) {
+    address = bindAddr;
+    port = bindPort;
+    this.variable = variable;
+    maxConnectionNumber = connNum;
     clientResponse = new ArrayList<>();
+  }
 
-    AsynchronousServerSocketChannel serverSock = AsynchronousServerSocketChannel.open();
+  void startServing() throws IOException {
+    AtomicInteger currConnection = new AtomicInteger(0);
 
-    serverSock.bind(sockAddr);
+    AsynchronousServerSocketChannel serverSock =
+        AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(address, port));
 
     serverSock.accept(
         serverSock,
@@ -38,7 +46,7 @@ class Server {
           @Override
           public void completed(
               AsynchronousSocketChannel sockChannel, AsynchronousServerSocketChannel serverSock) {
-            if (currConnection.get() < connNum) {
+            if (currConnection.get() < maxConnectionNumber) {
               currConnection.getAndIncrement();
               serverSock.accept(serverSock, this);
 
@@ -53,7 +61,7 @@ class Server {
         });
   }
 
-  private void startWrite(AsynchronousSocketChannel sockChannel, final int variable) {
+  private synchronized void startWrite(AsynchronousSocketChannel sockChannel, final int variable) {
     ByteBuffer buffer = ByteBuffer.allocate(Constants.BSIZE);
     buffer.asIntBuffer().put(variable);
 

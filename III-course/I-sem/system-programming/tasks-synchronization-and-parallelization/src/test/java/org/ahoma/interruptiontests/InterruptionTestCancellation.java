@@ -14,6 +14,8 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,15 +47,8 @@ class InterruptionTestCancellation {
             10003,
             2,
             computationManager,
-            integer -> 42,
-            integer -> {
-              try {
-                while (!Thread.interrupted()) Thread.sleep(400);
-              } catch (InterruptedException e) {
-                e.printStackTrace();
-              }
-              return integer * integer;
-            });
+            (Function<Integer, Integer> & Serializable) integer -> 42,
+            (Function<Integer, Integer> & Serializable) integer -> integer * integer);
 
     assertEquals(0, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());
@@ -61,6 +56,7 @@ class InterruptionTestCancellation {
     testThread.start();
 
     try {
+      while (!testThread.clientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
