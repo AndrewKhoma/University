@@ -12,7 +12,14 @@ run {
     standardInput = System.in
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = 1.11
+
+
+
+configurations {
+    TestImplementation.extendsFrom implementation
+    TestRuntimeOnly.extendsFrom runtimeOnly
+}
 
 repositories {
     jcenter()

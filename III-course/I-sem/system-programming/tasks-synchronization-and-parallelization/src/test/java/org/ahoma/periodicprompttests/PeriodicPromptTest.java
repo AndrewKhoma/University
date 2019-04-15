@@ -12,8 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
-import java.io.*;
-import java.util.function.Function;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,14 +48,7 @@ class PeriodicPromptTest {
   @Test
   void computationsBeforeFirstPrompt() {
     TestManagerThread testThread =
-        new TestManagerThread(
-            true,
-            5,
-            20000,
-            2,
-            computationManager,
-            (Function<Integer, Integer> & Serializable) integer -> 42,
-            (Function<Integer, Integer> & Serializable) integer -> 2);
+        new TestManagerThread(true, 5, 20000, 2, computationManager, integer -> 42, integer -> 2);
 
     assertEquals(0, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());
@@ -83,24 +78,22 @@ class PeriodicPromptTest {
             20001,
             2,
             computationManager,
-            (Function<Integer, Integer> & Serializable)
-                integer -> {
-                  try {
-                    Thread.sleep(1100);
-                  } catch (InterruptedException e) {
-                    e.printStackTrace();
-                  }
-                  return 42;
-                },
-            (Function<Integer, Integer> & Serializable)
-                integer -> {
-                  try {
-                    Thread.sleep(1100);
-                  } catch (InterruptedException e) {
-                    e.printStackTrace();
-                  }
-                  return 2;
-                });
+            integer -> {
+              try {
+                Thread.sleep(1100);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              return 42;
+            },
+            integer -> {
+              try {
+                Thread.sleep(1100);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              return 2;
+            });
 
     assertEquals(0, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());
@@ -141,16 +134,15 @@ class PeriodicPromptTest {
             20002,
             2,
             computationManager,
-            (Function<Integer, Integer> & Serializable) integer -> 42,
-            (Function<Integer, Integer> & Serializable)
-                integer -> {
-                  try {
-                    while (!Thread.interrupted()) Thread.sleep(100);
-                  } catch (InterruptedException e) {
-                    e.printStackTrace();
-                  }
-                  return 2;
-                });
+            integer -> 42,
+            integer -> {
+              try {
+                while (!Thread.interrupted()) Thread.sleep(100);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              return 2;
+            });
 
     assertEquals(0, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());
@@ -197,16 +189,15 @@ class PeriodicPromptTest {
             20003,
             2,
             computationManager,
-            (Function<Integer, Integer> & Serializable) integer -> 42,
-            (Function<Integer, Integer> & Serializable)
-                integer -> {
-                  try {
-                    while (!Thread.interrupted()) Thread.sleep(100);
-                  } catch (InterruptedException e) {
-                    e.printStackTrace();
-                  }
-                  return 2;
-                });
+            integer -> 42,
+            integer -> {
+              try {
+                while (!Thread.interrupted()) Thread.sleep(100);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              return 2;
+            });
 
     assertEquals(0, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());

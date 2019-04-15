@@ -34,12 +34,13 @@ public class Client {
       parameterClass = inputStream.readObject();
       System.out.println("Read object");
       clientParameter = (ClientParameter) parameterClass;
-    } catch (IOException exc) {
-      exc.printStackTrace();
-      System.out.println("Can't open file");
+    } catch (Exception exc) {
+      System.out.println(exc.toString());
+      System.out.println("Can't open file Exception");
       System.exit(0);
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+    } catch (Throwable exc) {
+      System.out.println("Can't open file Throwable");
+      System.exit(0);
     }
 
     try {

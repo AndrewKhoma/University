@@ -5,12 +5,13 @@ package org.ahoma;
  */
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Scanner;
-import java.util.function.Function;
 
 public class Demonstration {
   public static void main(String[] args) throws IOException {
+
+    String version = System.getProperty("java.version");
+    System.out.println(version);
 
     Scanner sc = new Scanner(System.in);
     int variable = 0;
@@ -36,16 +37,15 @@ public class Demonstration {
             3120,
             2,
             computationManager,
-            (Function<Integer, Integer> & Serializable) integer -> 42,
-            (Function<Integer, Integer> & Serializable)
-                integer -> {
-                  try {
-                    Thread.sleep(2000);
-                  } catch (InterruptedException e) {
-                    e.printStackTrace();
-                  }
-                  return 42;
-                });
+            integer -> 42,
+            integer -> {
+              try {
+                Thread.sleep(2000);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              return 42;
+            });
     mainManager.startComputing();
   }
 }

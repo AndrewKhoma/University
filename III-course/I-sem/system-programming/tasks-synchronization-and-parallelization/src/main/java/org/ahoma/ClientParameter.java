@@ -5,14 +5,13 @@ package org.ahoma;
  */
 
 import java.io.*;
-import java.util.function.Function;
 
 class ClientParameter implements Serializable {
-  private Function<Integer, Integer> function;
+  private SerializableFunction<Integer, Integer> function;
   private String address;
   private int port;
 
-  ClientParameter(String address, int port, Function<Integer, Integer> function) {
+  ClientParameter(String address, int port, SerializableFunction<Integer, Integer> function) {
     this.function = function;
     this.address = address;
     this.port = port;
@@ -26,7 +25,7 @@ class ClientParameter implements Serializable {
     this.port = port;
   }
 
-  void changeFunction(Function<Integer, Integer> function) {
+  void changeFunction(SerializableFunction<Integer, Integer> function) {
     this.function = function;
   }
 
@@ -38,7 +37,7 @@ class ClientParameter implements Serializable {
     return port;
   }
 
-  Function<Integer, Integer> getFunction() {
+  SerializableFunction<Integer, Integer> getFunction() {
     return function;
   }
 

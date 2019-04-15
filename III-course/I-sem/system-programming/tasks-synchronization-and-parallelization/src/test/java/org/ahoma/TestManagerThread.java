@@ -4,9 +4,6 @@ package org.ahoma;
  * Copyright (C) 2019 Andrii Khoma. All rights reserved.
  */
 
-import java.io.IOException;
-import java.util.function.Function;
-
 public class TestManagerThread extends Thread {
 
   private volatile MainManager mainManager;
@@ -18,19 +15,15 @@ public class TestManagerThread extends Thread {
       int newPort,
       int clientConnectionNumber,
       ComputationManager computationManager,
-      Function<Integer, Integer>... clientFunctions) {
-    try {
-      mainManager =
-          new MainManager(
-              promptEnable,
-              newValue,
-              newPort,
-              clientConnectionNumber,
-              computationManager,
-              clientFunctions);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+      SerializableFunction<Integer, Integer>... clientFunctions) {
+    mainManager =
+        new MainManager(
+            promptEnable,
+            newValue,
+            newPort,
+            clientConnectionNumber,
+            computationManager,
+            clientFunctions);
   }
 
   @Override

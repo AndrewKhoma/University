@@ -14,8 +14,6 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.io.Serializable;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -42,13 +40,10 @@ class InterruptionTestCancellation {
   void fNonZeroGHangs() {
     TestManagerThread testThread =
         new TestManagerThread(
-            false,
-            5,
-            10003,
-            2,
-            computationManager,
-            (Function<Integer, Integer> & Serializable) integer -> 42,
-            (Function<Integer, Integer> & Serializable) integer -> integer * integer);
+            false, 5, 10003, 2, computationManager, integer -> 42, integer -> integer * integer);
+
+    String version = System.getProperty("java.version");
+    System.out.println(version);
 
     assertEquals(0, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());

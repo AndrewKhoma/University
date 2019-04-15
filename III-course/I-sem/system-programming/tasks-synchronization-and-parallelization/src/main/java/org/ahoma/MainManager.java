@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 
 class MainManager {
   private static final long timeDeltaMillis = 1000;
@@ -20,7 +19,7 @@ class MainManager {
   private ComputationManager compute;
   private Server server;
   private List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
-  private Function<Integer, Integer>[] clientFunctions;
+  private SerializableFunction<Integer, Integer>[] clientFunctions;
   private int serverPort;
 
   private boolean calculationsEnabled;
@@ -34,8 +33,7 @@ class MainManager {
       int port,
       int clientConnectionNumber,
       ComputationManager computationManager,
-      Function<Integer, Integer>... clientFunctions)
-      throws IOException {
+      SerializableFunction<Integer, Integer>... clientFunctions) {
 
     Runtime.getRuntime().addShutdownHook(new Thread(this::quit));
     compute = computationManager;
@@ -63,10 +61,8 @@ class MainManager {
     int index = classPath.lastIndexOf("/test/");
     if (index != -1) classPath = classPath.substring(0, index) + "/main/";
     synchronized (this) {
-      for (Function<Integer, Integer> function : clientFunctions) {
-        ClientParameter clientParameter =
-            new ClientParameter(
-                "localhost", serverPort, (Function<Integer, Integer> & Serializable) function);
+      for (SerializableFunction<Integer, Integer> function : clientFunctions) {
+        ClientParameter clientParameter = new ClientParameter("localhost", serverPort, function);
         String clientParamName = "client-param-" + System.currentTimeMillis();
 
         try {
@@ -80,6 +76,7 @@ class MainManager {
             int ch;
             BufferedWriter writer =
                 new BufferedWriter(new FileWriter("test-report-" + System.currentTimeMillis()));
+            writer.write(function.getClass().getSimpleName());
             while ((ch = reader.read()) != -1) writer.write((char) ch);
             reader.close();
             writer.close();
