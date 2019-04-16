@@ -20,7 +20,7 @@ import java.io.PrintStream;
 import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Execution(ExecutionMode.CONCURRENT)
+@Execution(ExecutionMode.SAME_THREAD)
 class PeriodicPromptTest {
   private ComputationManager computationManager;
 
@@ -51,7 +51,7 @@ class PeriodicPromptTest {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -97,7 +97,7 @@ class PeriodicPromptTest {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -106,7 +106,7 @@ class PeriodicPromptTest {
     systemInMock.provideText("c");
 
     try {
-      Thread.sleep(1100);
+      Thread.sleep(2100);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -153,7 +153,7 @@ class PeriodicPromptTest {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -213,7 +213,7 @@ class PeriodicPromptTest {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();

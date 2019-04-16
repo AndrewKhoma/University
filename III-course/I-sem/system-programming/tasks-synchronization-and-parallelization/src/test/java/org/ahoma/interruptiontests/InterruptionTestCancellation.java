@@ -18,7 +18,7 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@Execution(ExecutionMode.CONCURRENT)
+@Execution(ExecutionMode.SAME_THREAD)
 class InterruptionTestCancellation {
   private ComputationManager computationManager;
 
@@ -61,7 +61,7 @@ class InterruptionTestCancellation {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -110,7 +110,7 @@ class InterruptionTestCancellation {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();

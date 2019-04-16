@@ -21,7 +21,8 @@ class MainManager {
   private List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
   private SerializableFunction<Integer, Integer>[] clientFunctions;
   private int serverPort;
-  private int clientConectionNumber;
+  private int clientConnectionNumber;
+  private List<Process> clientProcesses;
 
   private boolean calculationsEnabled;
   private boolean promptEnable;
@@ -39,13 +40,14 @@ class MainManager {
     compute = computationManager;
     compute.resetArgumentNumber(clientConnectionNumber);
     serverPort = port;
-    this.clientConectionNumber = clientConnectionNumber;
+    this.clientConnectionNumber = clientConnectionNumber;
     calculationsEnabled = true;
     server = new Server("localhost", port, value, clientConnectionNumber);
     clientResponse = new ArrayList<>();
     assert clientFunctions.length == clientConnectionNumber;
     this.clientFunctions = clientFunctions;
     this.promptEnable = promptEnable;
+    clientProcesses = new ArrayList<>();
   }
 
   void startComputing() {
@@ -65,7 +67,10 @@ class MainManager {
 
         try {
           clientParameter.serialize(clientParamName);
-          new ProcessBuilder("java", "-cp", classPath, "org.ahoma.Client", clientParamName).start();
+          ProcessBuilder clientBuilder =
+              new ProcessBuilder("java", "-cp", classPath, "org.ahoma.Client", clientParamName);
+          Process clientProcess = clientBuilder.start();
+          clientProcesses.add(clientProcess);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -76,7 +81,7 @@ class MainManager {
   }
 
   synchronized boolean isClientsSpawned() {
-    return server.getConnectionNumber().get() == clientConectionNumber;
+    return server.getConnectionNumber().get() == clientConnectionNumber;
   }
 
   @SuppressWarnings("StatementWithEmptyBody")
@@ -155,8 +160,16 @@ class MainManager {
     }
   }
 
+  private void killAllProcesses() {
+    for (Process process : clientProcesses) {
+      if (process.isAlive()) process.destroy();
+    }
+  }
+
   public synchronized void quit() {
     tryToComputeResult();
+    killAllProcesses();
+    server.closeServer();
     if (compute.isComputed()) System.out.println("Computation result: " + compute.getResult());
     else System.out.println("Computation result is undefined");
     System.out.flush();

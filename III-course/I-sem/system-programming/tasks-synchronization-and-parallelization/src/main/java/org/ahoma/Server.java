@@ -27,6 +27,8 @@ class Server {
 
   private AtomicInteger currConnection;
 
+  private AsynchronousServerSocketChannel serverSock;
+
   Server(String bindAddr, int bindPort, int variable, int connNum) {
     address = bindAddr;
     port = bindPort;
@@ -37,8 +39,8 @@ class Server {
   }
 
   void startServing() throws IOException {
-    AsynchronousServerSocketChannel serverSock =
-        AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(address, port));
+    currConnection.compareAndSet(0, 0);
+    serverSock = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(address, port));
 
     serverSock.accept(
         serverSock,
@@ -50,14 +52,13 @@ class Server {
             if (currConnection.get() < maxConnectionNumber) {
               currConnection.getAndIncrement();
               serverSock.accept(serverSock, this);
-
               startWrite(sockChannel, variable);
             }
           }
 
           @Override
           public void failed(Throwable exc, AsynchronousServerSocketChannel serverSock) {
-            System.out.println("Fail to accept a connection");
+            System.err.println("Fail to accept a connection");
           }
         });
   }
@@ -84,7 +85,7 @@ class Server {
 
           @Override
           public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-            System.out.println("Fail to write message to client");
+            System.err.println("Fail to write message to client");
           }
         });
   }
@@ -104,5 +105,13 @@ class Server {
     clientResponse.clear();
     assert result.size() != 0;
     return result;
+  }
+
+  void closeServer() {
+    try {
+      serverSock.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

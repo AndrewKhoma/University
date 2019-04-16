@@ -41,7 +41,7 @@ class InterruptionTestNonZero {
         new TestManagerThread(
             false,
             5,
-            9999,
+            9998,
             2,
             computationManager,
             integer -> 42,
@@ -60,7 +60,7 @@ class InterruptionTestNonZero {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -108,7 +108,7 @@ class InterruptionTestNonZero {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();

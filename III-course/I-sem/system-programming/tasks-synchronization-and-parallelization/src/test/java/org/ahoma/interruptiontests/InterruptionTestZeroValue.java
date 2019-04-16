@@ -17,7 +17,7 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Execution(ExecutionMode.CONCURRENT)
+@Execution(ExecutionMode.SAME_THREAD)
 class InterruptionTestZeroValue {
   private ComputationManager computationManager;
 
@@ -62,7 +62,7 @@ class InterruptionTestZeroValue {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -114,7 +114,7 @@ class InterruptionTestZeroValue {
     testThread.start();
 
     try {
-      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      while (testThread.notClientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
