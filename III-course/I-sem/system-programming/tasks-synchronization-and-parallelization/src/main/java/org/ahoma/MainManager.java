@@ -4,7 +4,7 @@ package org.ahoma;
  * Copyright (C) 2019 Andrii Khoma. All rights reserved.
  */
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,10 @@ class MainManager {
   private List<Pair<ByteBuffer, Future<Integer>>> clientResponse;
   private SerializableFunction<Integer, Integer>[] clientFunctions;
   private int serverPort;
+  private int clientConectionNumber;
 
   private boolean calculationsEnabled;
   private boolean promptEnable;
-  private boolean clientsSpawned;
 
   @SafeVarargs
   MainManager(
@@ -39,13 +39,13 @@ class MainManager {
     compute = computationManager;
     compute.resetArgumentNumber(clientConnectionNumber);
     serverPort = port;
+    this.clientConectionNumber = clientConnectionNumber;
     calculationsEnabled = true;
     server = new Server("localhost", port, value, clientConnectionNumber);
     clientResponse = new ArrayList<>();
     assert clientFunctions.length == clientConnectionNumber;
     this.clientFunctions = clientFunctions;
     this.promptEnable = promptEnable;
-    clientsSpawned = false;
   }
 
   void startComputing() {
@@ -58,8 +58,6 @@ class MainManager {
     String classPath =
         Objects.requireNonNull(MainManager.class.getClassLoader().getResource(".")).toString();
 
-    int index = classPath.lastIndexOf("/test/");
-    if (index != -1) classPath = classPath.substring(0, index) + "/main/";
     synchronized (this) {
       for (SerializableFunction<Integer, Integer> function : clientFunctions) {
         ClientParameter clientParameter = new ClientParameter("localhost", serverPort, function);
@@ -67,36 +65,18 @@ class MainManager {
 
         try {
           clientParameter.serialize(clientParamName);
-          ProcessBuilder broker =
-              new ProcessBuilder("java", "-cp", classPath, "org.ahoma.Client", clientParamName);
-          Process runBroker = broker.start();
-
-          synchronized (System.out) {
-            Reader reader = new InputStreamReader(runBroker.getInputStream());
-            int ch;
-            BufferedWriter writer =
-                new BufferedWriter(new FileWriter("test-report-" + System.currentTimeMillis()));
-            writer.write(function.getClass().getSimpleName());
-            while ((ch = reader.read()) != -1) writer.write((char) ch);
-            reader.close();
-            writer.close();
-          }
-
-          runBroker.waitFor();
-
-          System.out.println("Program complete");
-        } catch (IOException | InterruptedException e) {
+          new ProcessBuilder("java", "-cp", classPath, "org.ahoma.Client", clientParamName).start();
+        } catch (IOException e) {
           e.printStackTrace();
         }
       }
-      clientsSpawned = true;
     }
 
     startInteraction();
   }
 
   synchronized boolean isClientsSpawned() {
-    return clientsSpawned;
+    return server.getConnectionNumber().get() == clientConectionNumber;
   }
 
   @SuppressWarnings("StatementWithEmptyBody")

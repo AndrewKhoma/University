@@ -25,17 +25,18 @@ class Server {
   private int variable;
   private int maxConnectionNumber;
 
+  private AtomicInteger currConnection;
+
   Server(String bindAddr, int bindPort, int variable, int connNum) {
     address = bindAddr;
     port = bindPort;
     this.variable = variable;
     maxConnectionNumber = connNum;
     clientResponse = new ArrayList<>();
+    currConnection = new AtomicInteger(0);
   }
 
   void startServing() throws IOException {
-    AtomicInteger currConnection = new AtomicInteger(0);
-
     AsynchronousServerSocketChannel serverSock =
         AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(address, port));
 
@@ -59,6 +60,10 @@ class Server {
             System.out.println("Fail to accept a connection");
           }
         });
+  }
+
+  synchronized AtomicInteger getConnectionNumber() {
+    return currConnection;
   }
 
   private synchronized void startWrite(AsynchronousSocketChannel sockChannel, final int variable) {

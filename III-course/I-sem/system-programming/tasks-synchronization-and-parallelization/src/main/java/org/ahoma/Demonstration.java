@@ -4,15 +4,10 @@ package org.ahoma;
  * Copyright (C) 2019 Andrii Khoma. All rights reserved.
  */
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Demonstration {
-  public static void main(String[] args) throws IOException {
-
-    String version = System.getProperty("java.version");
-    System.out.println(version);
-
+  public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
     int variable = 0;
     boolean correctResponse = false;
@@ -40,7 +35,7 @@ public class Demonstration {
             integer -> 42,
             integer -> {
               try {
-                Thread.sleep(2000);
+                while (!Thread.interrupted()) Thread.sleep(2000);
               } catch (InterruptedException e) {
                 e.printStackTrace();
               }

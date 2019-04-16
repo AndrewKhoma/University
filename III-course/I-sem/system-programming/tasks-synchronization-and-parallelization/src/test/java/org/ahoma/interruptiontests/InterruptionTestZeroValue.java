@@ -62,7 +62,8 @@ class InterruptionTestZeroValue {
     testThread.start();
 
     try {
-      Thread.sleep(10);
+      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -113,7 +114,8 @@ class InterruptionTestZeroValue {
     testThread.start();
 
     try {
-      Thread.sleep(10);
+      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

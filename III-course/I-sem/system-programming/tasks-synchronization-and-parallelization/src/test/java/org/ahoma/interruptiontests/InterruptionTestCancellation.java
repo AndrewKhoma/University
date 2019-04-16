@@ -40,10 +40,20 @@ class InterruptionTestCancellation {
   void fNonZeroGHangs() {
     TestManagerThread testThread =
         new TestManagerThread(
-            false, 5, 10003, 2, computationManager, integer -> 42, integer -> integer * integer);
-
-    String version = System.getProperty("java.version");
-    System.out.println(version);
+            false,
+            5,
+            15000,
+            2,
+            computationManager,
+            integer -> 42,
+            integer -> {
+              try {
+                while (!Thread.interrupted()) Thread.sleep(400);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              return integer * integer;
+            });
 
     assertEquals(0, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());
@@ -81,7 +91,7 @@ class InterruptionTestCancellation {
         new TestManagerThread(
             false,
             5,
-            10004,
+            15001,
             2,
             computationManager,
             integer -> {
@@ -100,6 +110,7 @@ class InterruptionTestCancellation {
     testThread.start();
 
     try {
+      while (!testThread.clientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();

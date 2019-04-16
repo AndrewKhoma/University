@@ -6,26 +6,27 @@ package org.ahoma.periodicprompttests;
 
 import org.ahoma.ComputationManager;
 import org.ahoma.TestManagerThread;
+import org.junit.Rule;
+import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.PrintStream;
 
+import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Execution(ExecutionMode.CONCURRENT)
 class PeriodicPromptTest {
   private ComputationManager computationManager;
 
-  private ByteArrayInputStream inContent;
+  @Rule public final TextFromStandardInputStream systemInMock = emptyStandardInputStream();
+
   private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-  private final InputStream originalIn = System.in;
   private final PrintStream originalOut = System.out;
 
   @BeforeEach
@@ -34,21 +35,15 @@ class PeriodicPromptTest {
     System.setOut(new PrintStream(outContent));
   }
 
-  void systemIn(String input) {
-    inContent = new ByteArrayInputStream(input.getBytes());
-    System.setIn(inContent);
-  }
-
   @AfterEach
   void restoreStreams() {
-    System.setIn(originalIn);
     System.setOut(originalOut);
   }
 
   @Test
   void computationsBeforeFirstPrompt() {
     TestManagerThread testThread =
-        new TestManagerThread(true, 5, 20000, 2, computationManager, integer -> 42, integer -> 2);
+        new TestManagerThread(true, 5, 30000, 2, computationManager, integer -> 42, integer -> 2);
 
     assertEquals(0, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());
@@ -56,6 +51,7 @@ class PeriodicPromptTest {
     testThread.start();
 
     try {
+      while (!testThread.clientsSpawned()) Thread.sleep(20);
       Thread.sleep(100);
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -75,7 +71,7 @@ class PeriodicPromptTest {
         new TestManagerThread(
             true,
             5,
-            20001,
+            30001,
             2,
             computationManager,
             integer -> {
@@ -100,10 +96,17 @@ class PeriodicPromptTest {
 
     testThread.start();
 
-    systemIn("c");
+    try {
+      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    systemInMock.provideText("c");
 
     try {
-      Thread.sleep(2300);
+      Thread.sleep(1100);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -131,7 +134,7 @@ class PeriodicPromptTest {
         new TestManagerThread(
             true,
             5,
-            20002,
+            30002,
             2,
             computationManager,
             integer -> 42,
@@ -149,12 +152,17 @@ class PeriodicPromptTest {
 
     testThread.start();
 
-    for (int tests = 0; tests < 2; tests++) {
-      systemIn("a\n");
-      inContent.reset();
+    try {
+      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
+    for (int tests = 0; tests < 5; tests++) {
+      systemInMock.provideText("a\n");
       try {
-        Thread.sleep(1200);
+        Thread.sleep(1100);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
@@ -168,9 +176,9 @@ class PeriodicPromptTest {
               + "(b) continue without prompt\n"
               + "(c) cancel\n",
           outContent.toString());
-
-      outContent.reset();
     }
+
+    outContent.reset();
 
     testThread.stopCalculation();
 
@@ -186,7 +194,7 @@ class PeriodicPromptTest {
         new TestManagerThread(
             true,
             5,
-            20003,
+            30003,
             2,
             computationManager,
             integer -> 42,
@@ -204,14 +212,20 @@ class PeriodicPromptTest {
 
     testThread.start();
 
+    try {
+      while (!testThread.clientsSpawned()) Thread.sleep(20);
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
     for (int tests = 0; tests < 5; tests++) {
       if (tests == 0) {
-        systemIn("b\n");
-        inContent.reset();
+        systemInMock.provideText("b");
       }
 
       try {
-        Thread.sleep(2100);
+        Thread.sleep(1100);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
