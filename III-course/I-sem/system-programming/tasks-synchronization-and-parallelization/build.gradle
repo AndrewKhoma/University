@@ -25,6 +25,12 @@ compileJava {
     dependsOn copyClient
 }
 
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
 repositories {
     jcenter()
 }

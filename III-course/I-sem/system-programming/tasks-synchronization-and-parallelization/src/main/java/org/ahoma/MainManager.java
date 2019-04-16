@@ -169,7 +169,6 @@ class MainManager {
   public synchronized void quit() {
     tryToComputeResult();
     killAllProcesses();
-    server.closeServer();
     if (compute.isComputed()) System.out.println("Computation result: " + compute.getResult());
     else System.out.println("Computation result is undefined");
     System.out.flush();

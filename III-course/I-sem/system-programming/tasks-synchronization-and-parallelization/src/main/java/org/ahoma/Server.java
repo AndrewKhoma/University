@@ -106,12 +106,4 @@ class Server {
     assert result.size() != 0;
     return result;
   }
-
-  void closeServer() {
-    try {
-      serverSock.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
 }
