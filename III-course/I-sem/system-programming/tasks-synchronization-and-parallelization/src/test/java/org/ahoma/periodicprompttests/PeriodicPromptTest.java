@@ -103,10 +103,8 @@ class PeriodicPromptTest {
       e.printStackTrace();
     }
 
-    systemInMock.provideText("c");
-
     try {
-      Thread.sleep(2100);
+      Thread.sleep(1100);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -119,6 +117,16 @@ class PeriodicPromptTest {
         outContent.toString());
 
     outContent.reset();
+
+    systemInMock.provideText("c");
+
+    try {
+      Thread.sleep(1100);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("", outContent.toString());
 
     testThread.stopCalculation();
 
@@ -185,7 +193,8 @@ class PeriodicPromptTest {
     assertEquals(1, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());
 
-    assertEquals("Computation result is undefined\n", outContent.toString());
+    assertEquals(
+        "Function #2 has been canceled\nComputation result is undefined\n", outContent.toString());
   }
 
   @Test
@@ -220,14 +229,14 @@ class PeriodicPromptTest {
     }
 
     for (int tests = 0; tests < 5; tests++) {
-      if (tests == 0) {
-        systemInMock.provideText("b");
-      }
-
       try {
         Thread.sleep(1100);
       } catch (InterruptedException e) {
         e.printStackTrace();
+      }
+
+      if (tests == 0) {
+        systemInMock.provideText("b");
       }
 
       assertEquals(1, computationManager.getNowCalculated());
@@ -252,6 +261,7 @@ class PeriodicPromptTest {
     assertEquals(1, computationManager.getNowCalculated());
     assertFalse(computationManager.isComputed());
 
-    assertEquals("Computation result is undefined\n", outContent.toString());
+    assertEquals(
+        "Function #2 has been canceled\nComputation result is undefined\n", outContent.toString());
   }
 }

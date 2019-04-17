@@ -47,7 +47,7 @@ class InterruptionTestNonZero {
             integer -> 42,
             integer -> {
               try {
-                Thread.sleep(400);
+                Thread.sleep(3000);
               } catch (InterruptedException e) {
                 e.printStackTrace();
               }
@@ -70,7 +70,7 @@ class InterruptionTestNonZero {
     assertFalse(computationManager.isComputed());
 
     try {
-      Thread.sleep(400);
+      Thread.sleep(3000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

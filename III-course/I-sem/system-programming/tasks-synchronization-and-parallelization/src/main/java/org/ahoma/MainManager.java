@@ -161,8 +161,15 @@ class MainManager {
   }
 
   private void killAllProcesses() {
+    int functionNumber = 0;
     for (Process process : clientProcesses) {
-      if (process.isAlive()) process.destroy();
+      functionNumber++;
+      if (process.isAlive()) {
+        if (!compute.isComputed()) {
+          System.out.println("Function #" + functionNumber + " has been canceled");
+        }
+        process.destroy();
+      }
     }
   }
 

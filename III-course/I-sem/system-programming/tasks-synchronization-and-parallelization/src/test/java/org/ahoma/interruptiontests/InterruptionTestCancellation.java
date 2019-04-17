@@ -82,7 +82,8 @@ class InterruptionTestCancellation {
     testThread.interruptManager();
     testThread.stopCalculation();
 
-    assertEquals("Computation result is undefined\n", outContent.toString());
+    assertEquals(
+        "Function #2 has been canceled\nComputation result is undefined\n", outContent.toString());
   }
 
   @Test
@@ -131,6 +132,7 @@ class InterruptionTestCancellation {
     testThread.interruptManager();
     testThread.stopCalculation();
 
-    assertEquals("Computation result is undefined\n", outContent.toString());
+    assertEquals(
+        "Function #1 has been canceled\nComputation result is undefined\n", outContent.toString());
   }
 }
