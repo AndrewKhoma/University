@@ -1,3 +1,5 @@
+#include <utility>
+
 // Copyright (c) 2019.
 // Created by Andrii Khoma on 03/04/19.
 // All rights reserved.
@@ -11,8 +13,8 @@ DrawableObserver::DrawableObserver() {
   objects_.clear();
 }
 
-DrawableObserver::DrawableObserver(Shader *shader, const std::string &uniform_name) :
-    color_uniform_name_(uniform_name) {
+DrawableObserver::DrawableObserver(Shader *shader, std::string uniform_name) :
+    color_uniform_name_(std::move(uniform_name)) {
   shader_program_ = shader;
 
   colors_.clear();

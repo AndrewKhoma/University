@@ -12,13 +12,14 @@
 #include <glm/glm.hpp>
 
 #include "DrawableObject.h"
+#include "DrawableObject3D.h"
 #include "Shader.h"
 
 class DrawableObserver {
  public:
   DrawableObserver();
 
-  explicit DrawableObserver(Shader *shader, const std::string &uniform_name);
+  explicit DrawableObserver(Shader *shader, std::string uniform_name);
 
   void Add(DrawableObject *object, glm::vec3 color, const std::string &object_name);
 

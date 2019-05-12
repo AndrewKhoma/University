@@ -4,9 +4,7 @@
 
 #include <UI.h>
 
-#include "UI.h"
-
-UI::UI(unsigned int width, unsigned int height, const std::string& program_name) {
+UI::UI(unsigned int width, unsigned int height, const std::string &program_name, unsigned int dimension) {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -14,7 +12,12 @@ UI::UI(unsigned int width, unsigned int height, const std::string& program_name)
   glfwWindowHint(GLFW_SAMPLES, 5);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  win_width_ = width, win_height_ = height;
+  win_width_ = width, win_height_ = height, dimension_ = dimension;
+
+  if (!(2 <= dimension && dimension <= 3)) {
+    throw std::invalid_argument("Wrong dimension passed");
+  }
+
   window_ = glfwCreateWindow(width, height, program_name.c_str(), nullptr, nullptr);
 
   if (!window_) {
@@ -43,6 +46,12 @@ UI::UI(unsigned int width, unsigned int height, const std::string& program_name)
   glfwSetFramebufferSizeCallback(window_, GLFWFramebufferSizeCallback);
   glfwSetWindowFocusCallback(window_, GLFWWindowFocusCallback);
 
+  if (dimension == 3) {
+    glEnable(GL_DEPTH_TEST);
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    glfwSetCursorPosCallback(window_, GLFWMouseCallback);
+  }
+
   glEnable(GL_BLEND);
   glEnable(GL_POINT_SMOOTH);
 
@@ -54,7 +63,11 @@ UI::UI(unsigned int width, unsigned int height, const std::string& program_name)
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  shader_program_ = Shader("resources/shader.vert", "resources/shader.frag");
+  if (dimension == 2)
+    shader_program_ = Shader("resources/shader.vert", "resources/shader.frag");
+  else
+    shader_program_ = Shader("resources/shader3d.vert", "resources/shader.frag");
+
   painter_ = DrawableObserver(&shader_program_, "input_color");
 }
 
@@ -75,11 +88,19 @@ void UI::display(const glm::vec2 &top_left, const glm::vec2 &bottom_right) {
 
   camera_ = new Camera(glm::vec3(sum, z_offset));
 
-  projection_ =
-      glm::perspective(glm::radians(camera_->GetZoom()),
-                       static_cast<float>(win_width_) / static_cast<float>(win_height_),
-                       z_offset * 0.5f,
-                       z_offset * 1.5f);
+  if (dimension_ == 2) {
+    projection_ =
+        glm::perspective(glm::radians(camera_->GetZoom()),
+                         static_cast<float>(win_width_) / static_cast<float>(win_height_),
+                         z_offset * 0.5f,
+                         z_offset * 1.5f);
+  } else {
+    projection_ =
+        glm::perspective(glm::radians(camera_->GetZoom()),
+                         static_cast<float>(win_width_) / static_cast<float>(win_height_),
+                         0.5f,
+                         100.f);
+  }
   inverse_projection_ = glm::inverse(projection_);
 
   DrawAxes();
@@ -101,7 +122,7 @@ void UI::display(const glm::vec2 &top_left, const glm::vec2 &bottom_right) {
     glfwPollEvents();
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     DrawImGuiPanel();
     ImGui::Render();
@@ -160,18 +181,35 @@ void UI::DrawAxes() {
   painter_.DeleteByName("axes grid");
   painter_.DeleteByName("axes");
 
-  std::vector<glm::vec2> axes_grid =
-      CreateAxesGrid(static_cast<int>(std::floor(x_min.x)),
-                     static_cast<int>(std::ceil(x_max.x)),
-                     static_cast<int>(std::floor(y_min.y)),
-                     static_cast<int>(std::ceil(y_max.y)),
-                     kGridScale, kGridStep);
+  std::vector<glm::vec2> axes_grid;
+  if (dimension_ == 2) {
+    axes_grid = CreateAxesGrid(static_cast<int>(std::floor(x_min.x)),
+                               static_cast<int>(std::ceil(x_max.x)),
+                               static_cast<int>(std::floor(y_min.y)),
+                               static_cast<int>(std::ceil(y_max.y)),
+                               kGridScale, kGridStep);
+  } else {
+    axes_grid = CreateAxesGrid(static_cast<int>(std::floor(-10)),
+                               static_cast<int>(std::ceil(10)),
+                               static_cast<int>(std::floor(-10)),
+                               static_cast<int>(std::ceil(10)),
+                               kGridScale, kGridStep);
+  }
 
-  std::vector<glm::vec2>
-      axes{glm::vec2(0, y_min.y), glm::vec2(0, y_max.y), glm::vec2(x_min.x, 0), glm::vec2(x_max.x, 0)};
+  std::vector<glm::vec2> axes;
+  if (dimension_ == 2)
+    axes = {glm::vec2(0, y_min.y), glm::vec2(0, y_max.y), glm::vec2(x_min.x, 0), glm::vec2(x_max.x, 0)};
+  else
+    axes = {glm::vec2(0, -10), glm::vec2(0, 10), glm::vec2(-10, 0), glm::vec2(10, 0)};
 
-  painter_.Add(new DrawableObject(axes_grid, GL_LINES, 0.5f), GLMColors::kBlackColor, "axes grid");
-  painter_.Add(new DrawableObject(axes, GL_LINES, 5.0f), GLMColors::kBlackColor, "axes");
+  if (dimension_ == 2) {
+    painter_.Add(new DrawableObject(axes_grid, GL_LINES, 0.5f), GLMColors::kBlackColor, "axes grid");
+    painter_.Add(new DrawableObject(axes, GL_LINES, 5.0f), GLMColors::kBlackColor, "axes");
+  } else {
+    painter_.Add(new DrawableObject3D(ToXZPlane(axes_grid), GL_LINES, 0.5f), GLMColors::kBlackColor, "axes grid");
+    painter_.Add(new DrawableObject3D(axes, GL_LINES, 5.0f), GLMColors::kBlackColor, "axes");
+    painter_.Add(new DrawableObject3D(ToXZPlane(axes), GL_LINES, 5.0f), GLMColors::kBlackColor, "axes");
+  }
 }
 
 void UI::ProcessInput(GLFWwindow *window) {
@@ -180,14 +218,26 @@ void UI::ProcessInput(GLFWwindow *window) {
 
   static bool changed;
   changed = false;
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-    camera_->ProcessKeyboard(kUp, delta_time_), changed = true;
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    camera_->ProcessKeyboard(kDown, delta_time_), changed = true;
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     camera_->ProcessKeyboard(kLeft, delta_time_), changed = true;
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     camera_->ProcessKeyboard(kRight, delta_time_), changed = true;
+
+  if (dimension_ == 2) {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+      camera_->ProcessKeyboard(kUp, delta_time_), changed = true;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+      camera_->ProcessKeyboard(kDown, delta_time_), changed = true;
+  } else {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+      camera_->ProcessKeyboard(kForward, delta_time_), changed = true;
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+      camera_->ProcessKeyboard(kBackward, delta_time_), changed = true;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+      camera_->ProcessKeyboard(kUp, delta_time_), changed = true;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+      camera_->ProcessKeyboard(kDown, delta_time_), changed = true;
+  }
 
   if (changed) {
     DrawAxes();
@@ -209,11 +259,20 @@ void UI::FramebufferSizeCallback(GLFWwindow *, int width, int height) {
   win_width_ = static_cast<unsigned int>(width);
   win_height_ = static_cast<unsigned int>(height);
 
-  projection_ =
-      glm::perspective(glm::radians(camera_->GetZoom()),
-                       static_cast<float>(win_width_) / static_cast<float>(win_height_),
-                       z_offset * 0.5f,
-                       z_offset * 1.5f);
+  if (dimension_ == 2) {
+    projection_ =
+        glm::perspective(glm::radians(camera_->GetZoom()),
+                         static_cast<float>(win_width_) / static_cast<float>(win_height_),
+                         z_offset * 0.5f,
+                         z_offset * 1.5f);
+  } else {
+    projection_ =
+        glm::perspective(glm::radians(camera_->GetZoom()),
+                         static_cast<float>(win_width_) / static_cast<float>(win_height_),
+                         0.5f,
+                         100.f);
+  }
+
   inverse_projection_ = glm::inverse(projection_);
   shader_program_.SetMat4f("projection", projection_);
 
@@ -231,11 +290,19 @@ void UI::ScrollCallback(GLFWwindow *, double, double y_offset) {
   static float z_offset;
   z_offset = camera_->GetPosition().z;
 
-  projection_ =
-      glm::perspective(glm::radians(camera_->GetZoom()),
-                       static_cast<float>(win_width_) / static_cast<float>(win_height_),
-                       z_offset * 0.5f,
-                       z_offset * 1.5f);
+  if (dimension_ == 2) {
+    projection_ =
+        glm::perspective(glm::radians(camera_->GetZoom()),
+                         static_cast<float>(win_width_) / static_cast<float>(win_height_),
+                         z_offset * 0.5f,
+                         z_offset * 1.5f);
+  } else {
+    projection_ =
+        glm::perspective(glm::radians(camera_->GetZoom()),
+                         static_cast<float>(win_width_) / static_cast<float>(win_height_),
+                         0.5f,
+                         100.f);
+  }
   inverse_projection_ = glm::inverse(projection_);
   shader_program_.SetMat4f("projection", projection_);
 
@@ -246,6 +313,37 @@ void UI::GLFWMouseButtonCallback(GLFWwindow *window, int button, int action, int
   static UI *ui;
   ui = static_cast<UI *>(glfwGetWindowUserPointer(window));
   ui->MouseButtonCallback(window, button, action, mods);
+}
+
+void UI::GLFWMouseCallback(GLFWwindow *window, double x_pos, double y_pos) {
+  static UI *ui;
+  ui = static_cast<UI *>(glfwGetWindowUserPointer(window));
+  ui->MouseCallback(window, x_pos, y_pos);
+}
+
+void UI::MouseCallback(GLFWwindow *window, double x_pos, double y_pos) {
+  int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+  static bool first_mouse = true;
+  if (state == GLFW_PRESS) {
+    static double last_x, last_y;
+    if (first_mouse) {
+      last_x = x_pos;
+      last_y = y_pos;
+      first_mouse = false;
+    }
+
+    auto x_offset = static_cast<float>(x_pos - last_x);
+    auto y_offset = static_cast<float>(last_y - y_pos);
+    last_x = x_pos;
+    last_y = y_pos;
+
+    camera_->ProcessMouseMovement(x_offset, y_offset);
+
+    DrawAxes();
+    shader_program_.SetMat4f("view", camera_->GetViewMatrix());
+  } else {
+    first_mouse = true;
+  }
 }
 
 UI::~UI() {

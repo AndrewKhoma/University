@@ -53,13 +53,6 @@ void UIImpl::DrawImGuiPanel() {
     adding_data_ = false;
   }
 
-  auto delete_all_points = ImGui::Button("Delete points");
-  if (delete_all_points) {
-    Reset();
-  }
-
-  ImGui::SameLine();
-
   auto load_variant = ImGui::Button("Load variant");
   if (load_variant) {
     Reset();
@@ -73,6 +66,13 @@ void UIImpl::DrawImGuiPanel() {
     painter_.Add(new DrawableObject(Algorithm::Bezier(input_points_), GL_LINE_STRIP, 3.0f),
                  GLMColors::kRedColor,
                  "bezier spline");
+  }
+
+  ImGui::SameLine();
+
+  auto delete_all_points = ImGui::Button("Delete points");
+  if (delete_all_points) {
+    Reset();
   }
 
   manager_.Render();

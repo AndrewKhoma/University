@@ -1,7 +1,7 @@
 add_library(ui include/UI.h src/UI.cpp
         src/DrawableObject.h src/DrawableObject.cpp
         src/DrawableObserver.h src/DrawableObserver.cpp
-        src/ReportManager.cpp include/ReportManager.h)
+        src/ReportManager.cpp include/ReportManager.h src/DrawableObject3D.cpp src/DrawableObject3D.h)
 
 target_link_libraries(ui imgui camera shader utils)
 

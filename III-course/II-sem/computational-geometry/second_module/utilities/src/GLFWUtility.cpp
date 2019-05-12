@@ -112,6 +112,17 @@ std::vector<glm::vec2> CreateAxesGrid(int x_min, int x_max, int y_min, int y_max
   return axes;
 }
 
+std::vector<glm::vec3> ToXZPlane(const std::vector<glm::vec2> &input_points) {
+  std::vector<glm::vec3> output_points;
+  output_points.reserve(input_points.size());
+  for (auto input_point : input_points) {
+    output_points.emplace_back(input_point.x, 0, input_point.y);
+  }
+  return output_points;
+}
+
+namespace glm {
+
 bool operator<(const glm::vec2 &lhs, const glm::vec2 &rhs) {
   return lhs.x < rhs.x
       || (glm::epsilonEqual(static_cast<double>(lhs.x), static_cast<double>(rhs.x), kEpsGLM) && lhs.y < rhs.y);
@@ -133,3 +144,4 @@ bool operator<=(const glm::dvec2 &lhs, const glm::dvec2 &rhs) { return !(lhs > r
 bool operator>=(const glm::vec2 &lhs, const glm::vec2 &rhs) { return !(lhs < rhs); }
 
 bool operator>=(const glm::dvec2 &lhs, const glm::dvec2 &rhs) { return !(lhs < rhs); }
+}

@@ -3,6 +3,7 @@
 // Copyright (c) 2019 Andrii Khoma. All rights reserved.
 //
 
+#include <stdexcept>
 #include "DrawableObject.h"
 
 void DrawableObject::Init(float *points, int size, GLenum drawing_mode, float width) {
@@ -19,7 +20,7 @@ void DrawableObject::Init(float *points, int size, GLenum drawing_mode, float wi
 
   glBufferData(GL_ARRAY_BUFFER, size * sizeof(float) * kDimension, points, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<void *>(0));
+  glVertexAttribPointer(0, kDimension, GL_FLOAT, GL_FALSE, kDimension * sizeof(float), reinterpret_cast<void *>(0));
   glEnableVertexAttribArray(0);
 }
 
@@ -39,6 +40,13 @@ float *FromGLMPointToRawArray(const glm::vec2 &point) {
   return result;
 }
 
+DrawableObject::DrawableObject() {
+  points_ = nullptr;
+  size_ = 0;
+  mode_ = GL_LINE_STRIP;
+  width_ = 0;
+}
+
 DrawableObject::DrawableObject(const std::vector<glm::vec2> &points, GLenum drawing_mode, float width) {
   float *raw_points = FromGLMVecToRawArray(points);
   auto points_size = static_cast<int>(points.size());
@@ -52,6 +60,10 @@ DrawableObject::DrawableObject(const glm::vec2 &point, GLenum drawing_mode, floa
 }
 
 void DrawableObject::Draw() {
+  if (points_ == nullptr) {
+    throw std::logic_error("Can't render uninitialized object");
+  }
+
   glBindVertexArray(VAO_);
   if (mode_ != GL_POINTS) {
     glLineWidth(width_);
@@ -69,9 +81,11 @@ void DrawableObject::Draw() {
 }
 
 DrawableObject::~DrawableObject() {
-  delete[] points_;
-  glDeleteVertexArrays(1, &VAO_);
-  glDeleteBuffers(1, &VBO_);
+  if (points_) {
+    delete[] points_;
+    glDeleteVertexArrays(1, &VAO_);
+    glDeleteBuffers(1, &VBO_);
+  }
 }
 
 

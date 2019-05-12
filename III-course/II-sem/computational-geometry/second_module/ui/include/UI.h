@@ -27,7 +27,7 @@ class UI {
       kCursorError = 0.01f;  // percentage from screen size, where 1 equals to whole screen
 
  public:
-  UI(unsigned int width, unsigned int height, const std::string &program_name);
+  UI(unsigned int width, unsigned int height, const std::string &program_name, unsigned int dimension = 2);
 
   void display(const glm::vec2 &top_left, const glm::vec2 &bottom_right);
 
@@ -53,7 +53,7 @@ class UI {
   glm::mat4 projection_{}, inverse_projection_{};
 
   float delta_time_{};
-  unsigned int win_width_, win_height_;
+  unsigned int win_width_, win_height_, dimension_;
 
   void DrawAxes();
 
@@ -66,6 +66,9 @@ class UI {
   void ScrollCallback(GLFWwindow *, double, double y_offset);
 
   static void GLFWMouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+
+  static void GLFWMouseCallback(GLFWwindow *window, double x_pos, double y_pos);
+  void MouseCallback(GLFWwindow *window, double x_pos, double y_pos);
 };
 
 #endif  // UI_INCLUDE_UI_H_
