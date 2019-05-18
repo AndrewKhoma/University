@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <include file="scripts/user.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/tour-agencies.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/tour-agents.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/tour.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/tour-orders.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/user_password.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/unique_username.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

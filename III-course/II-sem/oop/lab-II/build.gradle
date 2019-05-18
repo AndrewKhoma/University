@@ -1,0 +1,81 @@
+plugins {
+    id 'java'
+    id 'war'
+    id "org.liquibase.gradle" version "2.0.1"
+    id "com.bmuschko.cargo" version "2.6"
+
+}
+
+group 'org.ahoma'
+version '1.0.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+
+    compile 'org.hibernate:hibernate-core:5.4.2.Final'
+    compile 'org.hibernate:hibernate-c3p0:5.4.2.Final'
+    compile group: 'org.springframework', name: 'spring-orm', version: '4.3.0.RELEASE'
+    compile group: 'org.javassist', name: 'javassist', version: '3.15.0-GA'
+    compile group: 'org.springframework', name: 'spring-core', version: '4.3.0.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web', version: '4.3.0.RELEASE'
+    compile group: 'org.springframework', name: 'spring-webmvc', version: '4.3.0.RELEASE'
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+    compile group: 'javax.servlet', name: 'jstl', version: '1.2'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
+
+    liquibaseRuntime 'org.liquibase:liquibase-core:3.6.1'
+    liquibaseRuntime 'mysql:mysql-connector-java:8.0.15'
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+
+}
+
+task buildWar {
+    dependsOn war
+}
+
+
+liquibase {
+    activities {
+        main {
+            changeLogFile "./src/main/resources/db/changelog.xml"
+            url 'jdbc:mysql://localhost/mydb'
+            driver 'com.mysql.cj.jdbc.Driver'
+            username 'root'
+            password 'root'
+        }
+    }
+}
+
+cargo {
+    containerId = 'tomcat9x'
+    port = 8080
+
+    deployable {
+        context = 'lab2'
+    }
+
+    remote {
+        hostname = 'localhost'
+        username = 'tomcatRun'
+        password = 'tomcatRuntomcat'
+    }
+}
+
+task explodedWar(type: Sync) {
+    into "${buildDir}/exploded"
+    with war
+}
+
+cargoRunLocal.dependsOn assemble
+cargoRunLocal.dependsOn update
+cargoRunLocal.dependsOn explodedWar
+
+war.dependsOn update
