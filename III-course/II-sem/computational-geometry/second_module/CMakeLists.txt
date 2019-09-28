@@ -16,7 +16,9 @@ add_subdirectory(shader)
 
 add_subdirectory(ui)
 
-add_subdirectory(implementation/splines)
+add_compile_definitions(-fPIC)
+
+add_subdirectory(implementation/surface)
 
 add_executable(comp-geom glad.c main.cpp)
 
