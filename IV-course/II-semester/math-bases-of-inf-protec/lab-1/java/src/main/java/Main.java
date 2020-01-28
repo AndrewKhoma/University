@@ -20,8 +20,13 @@ public class Main {
                 .getFile());
 
     try (Scanner reader = new Scanner(new FileReader(file))) {
-      long overallTime = 0;
-      long timeStart, timeEnd;
+      long overallTimeRecursive = 0, overallTimeBinary = 0, overallTimeExtended = 0;
+      long timeStartBinary,
+          timeEndBinary,
+          timeStartRecursive,
+          timeEndRecursive,
+          timeStartExtended,
+          timeEndExtended;
       long gcd1, gcd2, gcd3, x, y;
       Triplet<Long, Long, Long> result;
 
@@ -31,13 +36,21 @@ public class Main {
           long b = reader.nextLong();
           long c = reader.nextLong();
 
-          timeStart = System.nanoTime();
+          timeStartRecursive = System.nanoTime();
           gcd1 = AlgoGCD.RecursiveGCD(a, b);
-          gcd2 = AlgoGCD.BinaryGCD(a, b);
-          result = AlgoGCD.BinaryExtendedGCD(a, b);
-          timeEnd = System.nanoTime();
+          timeEndRecursive = System.nanoTime();
 
-          overallTime += timeEnd - timeStart;
+          timeStartBinary = System.nanoTime();
+          gcd2 = AlgoGCD.BinaryGCD(a, b);
+          timeEndBinary = System.nanoTime();
+
+          timeStartExtended = System.nanoTime();
+          result = AlgoGCD.BinaryExtendedGCD(a, b);
+          timeEndExtended = System.nanoTime();
+
+          overallTimeRecursive += timeEndRecursive - timeStartRecursive;
+          overallTimeBinary += timeEndBinary - timeStartBinary;
+          overallTimeExtended += timeEndExtended - timeStartExtended;
 
           x = result.getValue0();
           y = result.getValue1();
@@ -62,7 +75,9 @@ public class Main {
         }
       }
 
-      System.out.printf("Overall time of execution: %d microseconds", overallTime / 1000);
+      System.out.printf(
+          "Overall time of execution. Recursive: %d microseconds, Binary: %d microseconds, Extended: %d microseconds, ",
+          overallTimeRecursive / 1000, overallTimeBinary / 1000, overallTimeExtended / 1000);
 
     } catch (IOException e) {
       e.printStackTrace();

@@ -107,16 +107,28 @@ int64_t BinaryExtendedGCD(int64_t x, int64_t y, int64_t *a, int64_t *b) {
 int main() {
   freopen("input.txt", "r", stdin);
   int64_t a, b, c, x, y;
-  clock_t begin, end, overall = 0;
+  clock_t begin_recursive, end_recursive,
+      begin_binary, end_binary,
+      begin_extended, end_extended,
+      overall_recursive = 0, overall_binary = 0, overall_extended = 0;
   while (scanf("%ld %ld %ld", &a, &b, &c) == 3) {
     printf("----\n");
 
-    begin = clock();
+    begin_recursive = clock();
     int64_t gcd1 = RecursiveGCD(a, b);
+    end_recursive = clock();
+
+    begin_binary = clock();
     int64_t gcd2 = BinaryGCD(a, b);
+    end_binary = clock();
+
+    begin_extended = clock();
     int64_t gcd3 = BinaryExtendedGCD(a, b, &x, &y);
-    end = clock();
-    overall += end - begin;
+    end_extended = clock();
+
+    overall_recursive += end_recursive - begin_recursive;
+    overall_binary += end_binary - begin_binary;
+    overall_extended += end_extended - begin_extended;
 
     assert(gcd1 == gcd2);
     assert(gcd2 == gcd3);
@@ -133,7 +145,11 @@ int main() {
     }
   }
 
-  printf("Overall time of execution: %.2lf microsecond", ((double) (overall) * 1e6 / (double) (CLOCKS_PER_SEC)));
+  printf(
+      "Overall time of execution: Recursive: %.2lf microsecond, Binary: %.2lf microsecond, Extended: %.2f microseconds",
+      ((double) (overall_recursive) * 1e6 / (double) (CLOCKS_PER_SEC)),
+      ((double) (overall_binary) * 1e6 / (double) (CLOCKS_PER_SEC)),
+      ((double) (overall_extended) * 1e6 / (double) (CLOCKS_PER_SEC)));
 
   return 0;
 }
