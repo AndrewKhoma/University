@@ -50,7 +50,7 @@ int64_t BinaryGCD(int64_t x, int64_t y) {
   while (x) {
     while (!(x & 1)) x >>= 1;
     while (!(y & 1)) y >>= 1;
-    int64_t t = labs(x - y) / 2;
+    int64_t t = labs(x - y) >> 1;
     if (x >= y) {
       x = t;
     } else {
