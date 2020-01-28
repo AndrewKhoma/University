@@ -4,6 +4,32 @@
 #include <time.h>
 #include <assert.h>
 
+int64_t RecursiveGCD(int64_t x, int64_t y) {
+  if (x < 0) {
+    x = labs(x);
+  }
+
+  if (y < 0) {
+    y = labs(y);
+  }
+
+  assert(x >= 1 || y >= 1);
+
+  if (!x) {
+    return y;
+  } else if (!y) {
+    return x;
+  }
+
+  if (x == y) {
+    return y;
+  } else if (x < y) {
+    return RecursiveGCD(x, y % x);
+  } else {
+    return RecursiveGCD(y, x % y);
+  }
+}
+
 int64_t BinaryGCD(int64_t x, int64_t y) {
   x = labs(x), y = labs(y);
 
@@ -81,29 +107,34 @@ int64_t BinaryExtendedGCD(int64_t x, int64_t y, int64_t *a, int64_t *b) {
 int main() {
   freopen("input.txt", "r", stdin);
   int64_t a, b, c, x, y;
-  clock_t begin, end;
-  printf("CLOCKS_PER_SECOND = %ld\n", CLOCKS_PER_SEC);
+  clock_t begin, end, overall = 0;
   while (scanf("%ld %ld %ld", &a, &b, &c) == 3) {
     printf("----\n");
 
     begin = clock();
-    int64_t gcd1 = BinaryGCD(a, b);
-    int64_t gcd2 = BinaryExtendedGCD(a, b, &x, &y);
+    int64_t gcd1 = RecursiveGCD(a, b);
+    int64_t gcd2 = BinaryGCD(a, b);
+    int64_t gcd3 = BinaryExtendedGCD(a, b, &x, &y);
     end = clock();
+    overall += end - begin;
 
     assert(gcd1 == gcd2);
-    assert((x * a + y * b) == gcd2);
+    assert(gcd2 == gcd3);
+    assert((x * a + y * b) == gcd3);
 
-    printf("GCD(%ld, %ld) = %ld, execution time: %ld clocks\n", a, b, gcd1, (end - begin));
-    printf("%ld * %ld + %ld * %ld = %ld\n", a, x, b, y, gcd2);
+    printf("GCD(%ld, %ld) = %ld\n", a, b, gcd2);
+    printf("%ld * %ld + %ld * %ld = %ld\n", a, x, b, y, gcd3);
 
-    if (c % gcd1) {
+    if (c % gcd2) {
       printf("Can't solve equation a * s + b * t = c");
     } else {
-      int64_t mult = c / gcd1;
+      int64_t mult = c / gcd2;
       printf("%ld * %ld + %ld * %ld = %ld\n", a, x * mult, b, y * mult, c);
     }
   }
+
+  printf("Overall time of execution: %.2lf microsecond", ((double) (overall) * 1e6 / (double) (CLOCKS_PER_SEC)));
+
   return 0;
 }
 
