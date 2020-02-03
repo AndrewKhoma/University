@@ -3,25 +3,25 @@
 #include <assert.h>
 #include <time.h>
 
-const int kNumIter = 10;
+const int kNumIter = 100000;
 
-typedef struct matr {
+typedef struct matrix {
   int dim1, dim2;
-  long double **value;
+  float **value;
 } matrix;
 
-typedef struct hor_v {
+typedef struct hor_vert {
   int size;
-  long double *value;
+  float *value;
 } hor_vert;
 
-matrix CreateMatrix(int dim1, int dim2, long double default_value) {
+matrix CreateMatrix(int dim1, int dim2, float default_value) {
   matrix result;
   result.dim1 = dim1, result.dim2 = dim2;
 
-  result.value = (long double **) calloc(dim1, sizeof(long double *));
+  result.value = (float **) calloc(dim1, sizeof(float *));
   for (int i = 0; i < dim1; i++) {
-    result.value[i] = (long double *) calloc(dim2, sizeof(long double));
+    result.value[i] = (float *) calloc(dim2, sizeof(float));
     for (int j = 0; j < dim2; j++) {
       result.value[i][j] = default_value;
     }
@@ -29,10 +29,10 @@ matrix CreateMatrix(int dim1, int dim2, long double default_value) {
   return result;
 }
 
-hor_vert CreateVertex(int size, long double default_value) {
+hor_vert CreateVertex(int size, float default_value) {
   hor_vert result;
   result.size = size;
-  result.value = (long double *) calloc(size, sizeof(long double));
+  result.value = (float *) calloc(size, sizeof(float));
   for (int i = 0; i < size; i++) {
     result.value[i] = default_value;
   }
@@ -58,7 +58,7 @@ void PrintMatrix(const matrix *matrix1) {
   printf("\n");
   for (int i = 0; i < matrix1->dim1; i++) {
     for (int j = 0; j < matrix1->dim2; j++) {
-      printf("%.4Lf ", matrix1->value[i][j]);
+      printf("%.4f ", matrix1->value[i][j]);
     }
     printf("\n");
   }
@@ -115,7 +115,7 @@ int main() {
   matrix starting_matrix = CreateMatrix(n, m, 0);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < m; j++) {
-      scanf("%Lf", &starting_matrix.value[i][j]);
+      scanf("%f", &starting_matrix.value[i][j]);
     }
   }
 
@@ -123,7 +123,7 @@ int main() {
 
   hor_vert starting_vert = CreateVertex(n, 0);
   for (int i = 0; i < n; i++) {
-    scanf("%Lf", &starting_vert.value[i]);
+    scanf("%f", &starting_vert.value[i]);
   }
 
   clock_t start, end, overall = 0;
@@ -136,17 +136,17 @@ int main() {
     overall += end - start;
   }
 
-  printf("Overall time: %.2Lf microsecond\n",
-         (long double) overall * 1e6 / (long double) (CLOCKS_PER_SEC * kNumIter));
+  printf("Overall time: %.2lf microsecond\n",
+         (double) overall * 1e6 / ((double) (CLOCKS_PER_SEC) * (double) kNumIter));
 
   printf("p_%d:\n", num_iter - 1);
   for (int i = 0; i < starting_vert.size; i++) {
-    printf("%.5Lf ", pre_last.value[i]);
+    printf("%.5f ", pre_last.value[i]);
   }
 
   printf("\np_%d:\n", num_iter);
   for (int i = 0; i < starting_vert.size; i++) {
-    printf("%.5Lf ", last.value[i]);
+    printf("%.5f ", last.value[i]);
   }
 
   return 0;

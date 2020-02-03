@@ -17,7 +17,7 @@
 <vertex size>
 <vertex input>
 
-2 mcs
+27 mcs
 answer:
 p_3:
 (0.4875, 0.1513, 0.3612)
