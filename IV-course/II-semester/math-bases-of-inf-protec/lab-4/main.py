@@ -8,7 +8,7 @@ def vigenere_decipher(input_text: str, key: str, letter_to_pos: dict, pos_to_let
         pos_input = letter_to_pos[input_text[i]]
         decipher_pos = (pos_input - pos_decipher) % len(letter_to_pos)
         deciphered_text += pos_to_letter[decipher_pos]
-    print(deciphered_text)
+    print(key.ljust(15, ' '), deciphered_text)
 
 
 if __name__ == '__main__':
