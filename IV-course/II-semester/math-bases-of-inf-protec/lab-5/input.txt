@@ -1,0 +1,19 @@
+0 3 5 7 6 4
+0 3 5 6 4 7
+абвгдеєжзиіїйклмнопрстуфхцчшщьюя '-.
+п'ята лабораторна робота - абелеві групи.
+березень
+
+# TL;DR;
+# first line - initial permutation, mostly constant, mapping between group elements (0, 1, .. n) and real values
+# so it can be decoded as the following: 0 - 0, 3 - 1, 5 - 2 and so on, it's just values
+# 0 3 5 7 6 4 -> 0 1 2 3 4 5
+# second line - first row in our table for operation plus, how to read it
+# How to read it. Imagine we are here 0 3 5 6 4 7
+#                                           ^
+# than it says that 6 + (second element of our group, cause first is always zero) = 4, in our case it's 6 + 3 = 4
+# for simplicity, let's convert it to some unified representation from 0 till n, than we will have
+# 0 3 5 6 4 7 -> 0 1 2 4 5 3, so it means the following 0 + 1 = 1, 1 + 1 = 2, 2 + 1 = 4 and so on
+# third line - alphabet
+# forth - text
+# fifth - key
