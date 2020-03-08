@@ -1,0 +1,8 @@
+23  7     3  8
+505 19181 9
+37  5     20 24
+
+# TL;DR;
+# first line - p g a b for first task
+# second line - A p g for second task
+# third line - our good friends p g a b made a comeback
