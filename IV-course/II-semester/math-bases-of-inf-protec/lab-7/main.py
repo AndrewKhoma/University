@@ -9,11 +9,11 @@ if __name__ == '__main__':
             new_row = [int(x.strip()) for x in f.readline().split()]
             assert len(new_row) == mat_size
             matrix.append(new_row)
-        matrix_np = np.array(matrix)
+        matrix_np = np.array(matrix, dtype=int)
         alphabet = f.readline().strip() + ' '
         coded_word = f.readline().strip()
         encoded_word = [int(x.strip()) for x in f.readline().split()]
-    inv_matrix = np.linalg.inv(matrix_np)
+    inv_matrix = np.rint(np.linalg.inv(matrix_np))
     print(tabulate(matrix, tablefmt="latex"))
     print(tabulate(inv_matrix, tablefmt="latex"))
     alphabet_encoding = {ch: (i + 1) for i, ch in enumerate(alphabet)}
@@ -34,7 +34,6 @@ if __name__ == '__main__':
         column = np.array(encoded_word[id:id + 3])
         decoded = np.dot(column, inv_matrix.T)
         for x in decoded:
-            correct_x = int(round(x))
-            decoded_word += str(inverse_alphabet[correct_x])
+            decoded_word += str(inverse_alphabet[x])
         id += 3
     print(decoded_word)
