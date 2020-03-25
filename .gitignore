@@ -1163,3 +1163,26 @@ TSWLatexianTemp*
 # Package Files #
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+
+### Haskell template
+dist
+dist-*
+cabal-dev
+*.hi
+*.hie
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+.hpc
+.hsenv
+.cabal-sandbox/
+cabal.sandbox.config
+*.prof
+*.hp
+*.eventlog
+.stack-work/
+cabal.project.local
+cabal.project.local~
+.HTF/
+.ghc.environment.*
