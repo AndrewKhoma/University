@@ -1,3 +1,3 @@
 [submodule "IV-course/I-semester/metaprogramming"]
 	path = IV-course/I-semester/metaprogramming
-	url = git@github.com:AndrewKhoma/metaprogramming.git
+	url = https://github.com/AndrewKhoma/metaprogramming
