@@ -1,0 +1,86 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: cae61ca8e7744f7897ad2c3aab6ee73b2e1cc7fbdf5d9396b55416fb9dfc8529
+
+name:           lab2
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/Github username here/lab1#readme>
+homepage:       https://github.com/AndrewKhoma#readme
+bug-reports:    https://github.com/AndrewKhoma/issues
+author:         Andrii Khoma
+maintainer:     Andrii Khoma
+copyright:      2020 Andrii Khoma
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/AndrewKhoma
+
+library
+  exposed-modules:
+      Huffman
+  other-modules:
+      Paths_lab2
+  hs-source-dirs:
+      src
+  build-depends:
+      HUnit
+    , base >=4.12 && <4.13
+    , binary
+    , binary-strict
+    , bytestring
+    , containers
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , tasty-smallcheck
+  default-language: Haskell2010
+
+executable lab2-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_lab2
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      HUnit
+    , base >=4.12 && <4.13
+    , binary
+    , binary-strict
+    , bytestring
+    , containers
+    , lab2
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , tasty-smallcheck
+  default-language: Haskell2010
+
+test-suite lab2-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_lab2
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      HUnit
+    , base >=4.12 && <4.13
+    , binary
+    , binary-strict
+    , bytestring
+    , containers
+    , lab2
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , tasty-smallcheck
+  default-language: Haskell2010

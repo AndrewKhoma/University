@@ -1,0 +1,53 @@
+<?xml encoding="UTF-8"?>
+<!ELEMENT tariffs (tariff)>
+<!ATTLIST tariffs
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT tariff (name,operator-name,payroll,call-prices,sms-price,
+                  parameters)>
+<!ATTLIST tariff
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT name (#PCDATA)>
+<!ATTLIST name
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT operator-name (#PCDATA)>
+<!ATTLIST operator-name
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT payroll (#PCDATA)>
+<!ATTLIST payroll
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT call-prices (inner,other-operators,landline)>
+<!ATTLIST call-prices
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT sms-price (#PCDATA)>
+<!ATTLIST sms-price
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT parameters (connection-cost,favorite-number)>
+<!ATTLIST parameters
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT inner (#PCDATA)>
+<!ATTLIST inner
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT other-operators (#PCDATA)>
+<!ATTLIST other-operators
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT landline (#PCDATA)>
+<!ATTLIST landline
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT connection-cost (#PCDATA)>
+<!ATTLIST connection-cost
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT favorite-number (#PCDATA)>
+<!ATTLIST favorite-number xmlns CDATA #FIXED ''>
+

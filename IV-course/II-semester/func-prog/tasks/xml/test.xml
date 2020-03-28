@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tariffs SYSTEM "tariff.dtd">
+<tariffs>
+    <tariff>
+        <name>Vodafone S</name>
+        <operator-name>Vodafone</operator-name>
+        <payroll>110</payroll>
+        <call-prices>
+            <inner>0</inner>
+            <other-operators>0.5</other-operators>
+            <landline>0.5</landline>
+        </call-prices>
+        <sms-price>0.1</sms-price>
+        <parameters>
+            <connection-cost>10</connection-cost>
+            <favorite-number>15</favorite-number>
+        </parameters>
+    </tariff>
+</tariffs>

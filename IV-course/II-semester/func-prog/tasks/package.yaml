@@ -1,0 +1,120 @@
+name:                tasks
+version:             0.1.0.0
+github:              "AndrewKhoma/tasks"
+license:             BSD3
+author:              "Andrii Khoma"
+copyright:           "2020 Andrii Khoma"
+
+dependencies:
+  - base >= 4.7 && < 5
+  - containers
+  - random
+  - random-shuffle
+  - sort
+  - transformers
+  - split
+  - happstack-server
+  - blaze-html
+  - blaze-markup
+  - HaXml
+  - GLUT
+  - network
+  - gloss
+
+library:
+  source-dirs: src
+
+executables:
+  task1:
+    main:                Main.hs
+    source-dirs:         app/task1
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - tasks
+
+  task2:
+    main:                Main.hs
+    source-dirs:         app/task2
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - tasks
+
+  task3:
+    main:                Main.hs
+    source-dirs:         app/task3
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - tasks
+
+  task5:
+    main:                Main.hs
+    source-dirs:         app/task5
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - tasks
+
+  task6-client:
+    main:                Main.hs
+    source-dirs:         app/task6/client
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+      - -XLambdaCase
+      - -w
+    dependencies:
+      - tasks
+
+  task6-server:
+    main:                Main.hs
+    source-dirs:         app/task6/server
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+      - -w
+    dependencies:
+      - tasks
+
+  task7:
+    main:                Main.hs
+    source-dirs:         app/task7
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - tasks
+
+  task8:
+    main:                Main.hs
+    source-dirs:         app/task8
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -w
+      - -with-rtsopts=-N
+    dependencies:
+      - tasks
+
+  task9:
+    main:                Main.hs
+    source-dirs:         app/task9
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - tasks
