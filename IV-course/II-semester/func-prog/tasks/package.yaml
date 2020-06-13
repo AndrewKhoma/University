@@ -118,3 +118,13 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - tasks
+
+  exam:
+    main:                Main.hs
+    source-dirs:         app/exam
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - tasks

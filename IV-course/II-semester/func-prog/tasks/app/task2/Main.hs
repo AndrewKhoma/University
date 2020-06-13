@@ -1,7 +1,7 @@
 module Main where
 
-import           NeuralNetwork
-import           Text.Printf
+import NeuralNetwork
+import Text.Printf
 
 -- Test network on XOR operation
 main :: IO ()

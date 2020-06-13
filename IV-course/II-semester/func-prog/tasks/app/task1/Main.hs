@@ -1,12 +1,12 @@
 module Main where
 
-import           Control.Arrow
-import           Control.Monad
-import           Data.List
-import qualified Data.Map           as M
-import           Data.Maybe
-import           Data.Ord
-import           System.Environment
+import Control.Arrow
+import Control.Monad
+import Data.List
+import qualified Data.Map as M
+import Data.Maybe
+import Data.Ord
+import System.Environment
 
 sortOn f = map snd . Data.List.sortOn fst . map (f &&& id)
 
@@ -43,14 +43,14 @@ printBoard size solution = board [0 .. size - 1]
 
 go size =
   case solve size M.empty 1 (0, 0) of
-    []    -> "No solution found"
-    (s:_) -> printBoard size s
+    [] -> "No solution found"
+    (s : _) -> printBoard size s
 
 main = do
   args <- getArgs
   name <- getProgName
   putStrLn $
     case map reads args of
-      []             -> go 8
+      [] -> go 8
       [[(size, "")]] -> go size
-      _              -> "Usage: " ++ name ++ " <size>"
+      _ -> "Usage: " ++ name ++ " <size>"

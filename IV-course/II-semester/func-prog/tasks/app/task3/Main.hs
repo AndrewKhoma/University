@@ -1,9 +1,9 @@
 module Main where
 
-import           Data.Ord
-import           Data.Sort
-import           System.Random
-import           System.Random.Shuffle
+import Data.Ord
+import Data.Sort
+import System.Random
+import System.Random.Shuffle
 
 distances = [[0, 7, 8], [9, 0, 5], [10, 3, 0]]
 
@@ -21,12 +21,14 @@ mutate gen = do
   let [a, b] = take 2 $ randomRs (0, length gen - 1) g
   return $
     map
-      (\x ->
-         if x == a
-           then b
-           else if x == b
-                  then a
-                  else x)
+      ( \x ->
+          if x == a
+            then b
+            else
+              if x == b
+                then a
+                else x
+      )
       gen
 
 mutateStage :: [[Int]] -> IO [[Int]]
@@ -34,11 +36,12 @@ mutateStage population = do
   gen <- newStdGen
   let rand_nums = take (length population `div` 4) $ randomRs (0, length population - 1) gen
   mapM
-    (\(i, x) ->
-       if i `elem` rand_nums
-         then mutate x
-         else return x) $
-    zip [1 ..] population
+    ( \(i, x) ->
+        if i `elem` rand_nums
+          then mutate x
+          else return x
+    )
+    $ zip [1 ..] population
 
 crossover :: [Int] -> [Int] -> IO ([Int], [Int])
 crossover a b = do
@@ -58,10 +61,11 @@ crossoverStage population pSize = do
   let b = take (pSize `div` 2) $ randomRs (0, length population - 1) g
   newGens <-
     foldl
-      (\arr (x, y) -> do
-         r_arr <- arr
-         (new1, new2) <- crossover (population !! x) (population !! y)
-         return (new1 : new2 : r_arr))
+      ( \arr (x, y) -> do
+          r_arr <- arr
+          (new1, new2) <- crossover (population !! x) (population !! y)
+          return (new1 : new2 : r_arr)
+      )
       (return [])
       (zip a b)
   return (population ++ newGens)
@@ -81,13 +85,14 @@ epochSim population n pSize distances = do
 
 fitness distances a =
   snd $
-  foldl
-    (\(prev, dist) cur ->
-       if prev == -1
-         then (cur, 0)
-         else (cur, dist + ((distances !! prev) !! cur)))
-    (-1, -1)
-    a
+    foldl
+      ( \(prev, dist) cur ->
+          if prev == -1
+            then (cur, 0)
+            else (cur, dist + ((distances !! prev) !! cur))
+      )
+      (-1, -1)
+      a
 
 main :: IO ()
 main = do
