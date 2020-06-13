@@ -2,7 +2,20 @@ module Main where
 
 import Data.List
 
-data BTree a = Empty | Branch a (BTree a) (BTree a)
+data BTree a = Empty | Branch a (BTree a) (BTree a) deriving (Show)
+
+bft :: [a] -> BTree a
+bft xs = head nodes -- Breadth First Tree
+  where
+    nodes =
+      zipWith
+        g
+        (map Just xs ++ repeat Nothing)
+        -- true length of Empty leaves: |xs| + 1
+        (pairs $ tail nodes)
+    g (Just x) (lt, rt) = Branch x lt rt
+    g Nothing _ = Empty
+    pairs ~(a : ~(b : c)) = (a, b) : pairs c
 
 getEvenNodes :: (Integral a) => BTree a -> [a]
 getEvenNodes = evenNodesHelper []
@@ -19,11 +32,8 @@ numbers1 = 1 : map (+ 1) numbers1
 main = do
   -- task 1
   print "Task 1"
-  let tree =
-        Branch
-          2
-          (Branch 3 Empty (Branch 1 (Branch 6 Empty Empty) Empty))
-          (Branch 4 (Branch 2 Empty Empty) Empty)
+  let tree = bft [1 .. 10]
+  print tree
   let evenNodes = getEvenNodes tree
   print evenNodes
   -- task 2
